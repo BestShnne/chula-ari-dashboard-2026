@@ -1,0 +1,2324 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+  <title>แดชบอร์ดผู้สูงอายุ · เขตปทุมวัน &amp; เขตประเวศ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, input, select, textarea { font-family: inherit; }
+    a { color: hsl(329 53% 42%); text-decoration: none; }
+    a:hover { color: hsl(329 53% 35%); text-decoration: underline; }
+    .leaflet-popup-content-wrapper { padding: 0; border-radius: 10px; overflow: hidden; }
+    .leaflet-popup-content { margin: 0; }
+    .leaflet-popup-content table { border-collapse: collapse; }
+    @media print {
+      body * { visibility: hidden; }
+      body.print-mode-house #print-report, body.print-mode-house #print-report * { visibility: visible; }
+      body.print-mode-house #print-report { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
+      body.print-mode-charts #print-charts-report, body.print-mode-charts #print-charts-report * { visibility: visible; }
+      body.print-mode-charts #print-charts-report { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
+    }
+  </style>
+</helmet>
+
+<div style="min-height:100vh; background:hsl(200 20% 98%); font-family:'TH Sarabun New','Sarabun', sans-serif; color:hsl(200 25% 10%);">
+
+  <header style="border-bottom:1px solid hsl(200 15% 88%); background:#fff; position:sticky; top:0; z-index:20;">
+    <div style="max-width:1280px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:nowrap;">
+      <div style="display:flex; align-items:center; gap:12px; min-width:0; flex:1;">
+        <div style="width:56px; height:56px; border-radius:10px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#fff; flex-shrink:0;"><img src="chula-ari-logo.png" alt="Chula ARi" style="width:100%; height:100%; object-fit:contain;" /></div>
+        <div style="min-width:0;">
+          <div style="font-size:19px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.appTitle }}</div>
+          <div style="font-size:12px; color:hsl(200 10% 45%); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.appSubtitle }}</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
+        <button onClick="{{ toggleLang }}" style="padding:9px 12px; border-radius:10px; border:1px solid hsl(200 15% 82%); background:#fff; color:hsl(200 25% 35%); font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;">🌐 {{ langBtnLabel }}</button>
+        <a href="#" onClick="{{ openManual }}" style="display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border-radius:10px; border:1px solid hsl(329 53% 62% / .45); background:#fff; color:#ad1457; font-size:13px; font-weight:600; text-decoration:none; white-space:nowrap; cursor:pointer;">{{ t.manualBtn }}</a>
+        <div style="display:flex; gap:6px; background:hsl(200 20% 94%); padding:4px; border-radius:10px; overflow-x:auto;">
+          <button onClick="{{ goOverview }}" style="{{ tabBtnStyleOverview }}">{{ t.tabOverview }}</button>
+          <button onClick="{{ goDashboard }}" style="{{ tabBtnStyleDashboard }}">{{ t.tabMap }}</button>
+          <button onClick="{{ goStatistics }}" style="{{ tabBtnStyleStatistics }}">{{ t.tabStats }}</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <sc-if value="{{ manualOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:1000; background:rgba(30,20,28,.55); display:flex; flex-direction:column; align-items:center; padding:24px 16px;" onClick="{{ closeManual }}">
+      <div style="width:100%; max-width:900px; height:100%; display:flex; flex-direction:column; background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.3);" onClick="{{ stopProp }}">
+        <div style="flex-shrink:0; display:flex; align-items:center; justify-content:space-between; padding:12px 18px; border-bottom:1px solid hsl(329 30% 90%); background:#fdf2f8;">
+          <div style="font-size:15px; font-weight:700; color:#ad1457;">{{ t.manualTitle }}</div>
+          <button onClick="{{ closeManual }}" style="width:32px; height:32px; border-radius:8px; border:none; background:#fff; color:#ad1457; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+        </div>
+        <div style="flex:1; overflow:auto; background:hsl(330 30% 97%);">
+          <sc-if value="{{ manualIsEn }}" hint-placeholder-val="{{ false }}">
+            <dc-import name="User Manual" hint-size="100%,100%"></dc-import>
+          </sc-if>
+          <sc-if value="{{ manualIsTh }}" hint-placeholder-val="{{ true }}">
+            <dc-import name="คู่มือการใช้งาน" hint-size="100%,100%"></dc-import>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ dataLoaded }}" hint-placeholder-val="{{ false }}">
+    <main style="max-width:1280px; margin:0 auto; padding:20px 24px 48px; display:flex; flex-direction:column; gap:16px;">
+
+      <!-- ================= OVERVIEW ================= -->
+      <div style="{{ overviewWrapperStyle }}">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; gap:6px; background:hsl(200 20% 94%); padding:4px; border-radius:10px; width:fit-content;">
+              <button onClick="{{ selectAll }}" style="{{ districtTabStyleAll }}">{{ t.allDistricts }}</button>
+              <button onClick="{{ selectPatumwan }}" style="{{ districtTabStylePatumwan }}">{{ t.patumwan }}</button>
+              <button onClick="{{ selectPravet }}" style="{{ districtTabStylePravet }}">{{ t.pravet }}</button>
+            </div>
+            <div style="display:flex; align-items:center; gap:16px;">
+              <div style="font-size:12px; font-weight:600; color:hsl(200 25% 20%);">{{ t.ovTotalPre }} ({{ overviewTotalN }} {{ t.ray }})</div>
+              <div style="display:flex; align-items:center; gap:8px; cursor:pointer;" onClick="{{ toggleHideUnknown }}">
+                <span style="font-size:11px; color:hsl(200 10% 45%);">{{ t.showUnknown }}</span>
+                <div style="{{ hideUnknownTrackStyle }}">
+                  <div style="{{ hideUnknownKnobStyle }}"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; height:280px;">
+            <div style="background:#fff; border:1px solid hsl(200 15% 88%); border-radius:12px; padding:14px; display:flex; flex-direction:column; justify-content:center; gap:8px; overflow:hidden;">
+              <div style="font-size:18px; font-weight:600; color:hsl(329 53% 42%); background:hsl(329 53% 62% / .12); padding:2px 7px; border-radius:999px; display:inline-block; width:fit-content;">{{ t.ovSex }}</div>
+              <div style="display:flex; height:112px; border-radius:14px; overflow:hidden;">
+                <sc-for list="{{ overviewSexStats }}" as="item" hint-placeholder-count="2">
+                  <div style="{{ item.segStyle }}" onMouseEnter="{{ item.onEnter }}" onMouseMove="{{ item.onMove }}" onMouseLeave="{{ item.onLeave }}">
+                    <sc-if value="{{ item.isFemale }}" hint-placeholder-val="{{ false }}">
+                      <svg width="36" height="36" viewBox="0 0 24 24" style="{{ item.iconStyle }}"><circle cx="12" cy="6" r="4" fill="currentColor"/><path d="M8 11 L4 21 L9.5 21 L9.5 24 L14.5 24 L14.5 21 L20 21 L16 11 Z" fill="currentColor"/></svg>
+                    </sc-if>
+                    <sc-if value="{{ item.isMale }}" hint-placeholder-val="{{ false }}">
+                      <svg width="36" height="36" viewBox="0 0 24 24" style="{{ item.iconStyle }}"><circle cx="12" cy="6" r="4" fill="currentColor"/><rect x="7" y="11" width="10" height="13" rx="3" fill="currentColor"/></svg>
+                    </sc-if>
+                    <div style="font-size:14px; font-weight:600; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.25);">{{ item.label }}</div>
+                    <div style="font-size:22px; font-weight:800; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.25);">{{ item.display }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="background:#fff; border:1px solid hsl(200 15% 88%); border-radius:12px; padding:14px; display:flex; flex-direction:column; justify-content:center; gap:8px; overflow:hidden;">
+              <div style="font-size:18px; font-weight:600; color:hsl(329 53% 42%); background:hsl(329 53% 62% / .12); padding:2px 7px; border-radius:999px; display:inline-block; width:fit-content;">{{ t.ovAge }}</div>
+              <div style="display:flex; height:112px; border-radius:14px; overflow:hidden;">
+                <sc-for list="{{ overviewAgeStats }}" as="item" hint-placeholder-count="3">
+                  <div style="{{ item.segStyle }}" onMouseEnter="{{ item.onEnter }}" onMouseMove="{{ item.onMove }}" onMouseLeave="{{ item.onLeave }}">
+                    <svg width="36" height="36" viewBox="0 0 24 24" style="{{ item.iconStyle }}">
+                      <circle cx="10.5" cy="4.5" r="2.4" fill="currentColor"/>
+                      <path d="M8.3 8.2 C8.3 7.2 9.1 6.4 10.1 6.4 L11 6.4 C12 6.4 12.8 7.2 12.8 8.2 L12.8 13.5 C12.8 14.1 12.4 14.6 11.9 14.8 L12.3 22 C12.3 22.6 11.8 23 11.2 23 C10.6 23 10.2 22.5 10.1 21.9 L9.6 15.2 L9.1 21.9 C9 22.5 8.6 23 8 23 C7.4 23 6.9 22.6 6.9 22 L7.6 14.6 C7.3 14.3 7.1 13.9 7.1 13.5 L7.1 8.2 C7.1 7.2 7.3 7.2 8.3 8.2 Z" fill="currentColor"/>
+                      <path d="M12.5 10.5 L15.5 11.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                      <path d="M15.5 11.5 L15.5 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                      <path d="M15.5 11.5 Q13.2 11.5 13.2 9.3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+                    </svg>
+                    <div style="font-size:14px; font-weight:600; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.25); text-align:center;">{{ item.label }}</div>
+                    <div style="font-size:22px; font-weight:800; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.25);">{{ item.display }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px;">
+            <sc-for list="{{ overviewCards }}" as="card" hint-placeholder-count="5">
+              <div style="background:#fff; border:1px solid hsl(200 15% 88%); border-radius:10px; padding:8px 10px; display:grid; grid-template-rows:auto 1fr; gap:6px; overflow:hidden; min-height:280px;">
+                <div style="line-height:1.3; display:flex; flex-direction:column; gap:2px;">
+                  <span style="font-size:18px; font-weight:600; color:hsl(329 53% 42%); background:hsl(329 53% 62% / .12); padding:2px 7px; border-radius:999px; display:inline-block; width:fit-content;">{{ card.dimLabel }}</span>
+                  <span style="font-weight:600; font-size:14px;">{{ card.title }}</span>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; min-width:0; overflow:hidden;">
+                  <div style="flex-shrink:0; {{ card.pie.donutStyle }}">
+                    <sc-for list="{{ card.pie.segs }}" as="seg" hint-placeholder-count="3">
+                      <sc-if value="{{ seg.showPieLabel }}" hint-placeholder-val="{{ false }}">
+                        <span style="{{ seg.pieLabelStyle }}" onMouseEnter="{{ seg.onEnter }}" onMouseMove="{{ seg.onMove }}" onMouseLeave="{{ seg.onLeave }}">{{ seg.display }}</span>
+                      </sc-if>
+                    </sc-for>
+                  </div>
+                  <div style="display:flex; flex-direction:row; flex-wrap:wrap; justify-content:center; gap:2px 12px; min-width:0; width:100%;">
+                    <sc-for list="{{ card.pie.segs }}" as="seg" hint-placeholder-count="3">
+                      <div style="display:flex; align-items:center; gap:4px; font-size:13px; color:hsl(200 15% 40%); cursor:default;" onMouseEnter="{{ seg.onEnter }}" onMouseMove="{{ seg.onMove }}" onMouseLeave="{{ seg.onLeave }}">
+                        <span style="{{ seg.dotStyle }}"></span>
+                        <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ seg.label }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= SHARED: district + cluster/sub filter ================= -->
+      <div style="{{ sharedFilterWrapperStyle }}">
+      <div style="display:flex; gap:6px; background:hsl(200 20% 94%); padding:4px; border-radius:10px; width:fit-content;">
+        <button onClick="{{ selectAll }}" style="{{ districtTabStyleAll }}">{{ t.allDistricts }}</button>
+        <button onClick="{{ selectPatumwan }}" style="{{ districtTabStylePatumwan }}">{{ t.patumwan }}</button>
+        <button onClick="{{ selectPravet }}" style="{{ districtTabStylePravet }}">{{ t.pravet }}</button>
+      </div>
+
+      <div style="background:#fff; border:1px solid hsl(200 15% 88%); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div style="font-size:12px; color:hsl(200 10% 45%);">{{ t.district }}</div>
+            <div style="font-size:22px; font-weight:700;">{{ districtName }}</div>
+            <div style="font-size:13px; color:hsl(200 10% 45%); margin-top:4px;">
+              {{ t.sampleTotalPre }} <span style="color:hsl(329 53% 42%); font-weight:600;">{{ totalSample }}</span> {{ t.raySepShowing }} <span style="color:hsl(329 53% 42%); font-weight:600;">{{ currentN }}</span> {{ t.ray }}
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+            <div style="font-size:11px; color:hsl(200 10% 45%);">{{ t.filterHint }}</div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end;">
+              <sc-for list="{{ communityGroups }}" as="grp" hint-placeholder-count="2">
+                <button onClick="{{ grp.onClick }}" style="{{ grp.cardStyle }}">
+                  <div style="{{ grp.headerStyle }}"><span style="{{ grp.dotStyle }}"></span>{{ grp.cluster }}</div>
+                  <div style="display:flex; flex-wrap:wrap; gap:4px;">
+                    <sc-for list="{{ grp.names }}" as="nm" hint-placeholder-count="3">
+                      <span style="{{ grp.chipStyle }}">{{ nm }}</span>
+                    </sc-for>
+                  </div>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <sc-if value="{{ hasSubCommunityPickers }}" hint-placeholder-val="{{ false }}">
+          <div style="border-top:1px solid hsl(200 15% 92%); padding-top:12px; display:flex; flex-direction:column; gap:8px;">
+            <div style="font-size:11px; color:hsl(200 10% 45%);">{{ t.drillHint }}</div>
+            <sc-for list="{{ subCommunityPickers }}" as="scp" hint-placeholder-count="1">
+              <div>
+                <div style="font-size:10px; font-weight:600; color:hsl(329 53% 42%); margin-bottom:4px;">{{ scp.cluster }}</div>
+                <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                  <sc-for list="{{ scp.chips }}" as="sub" hint-placeholder-count="3">
+                    <button onClick="{{ sub.onClick }}" style="{{ sub.style }}">{{ sub.name }}</button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+      </div>
+
+      <!-- ================= DASHBOARD ================= -->
+      <div style="{{ dashboardWrapperStyle }}">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+
+          <div style="background:#fff; border:1px solid hsl(200 15% 88%); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:14px;">
+            <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
+              <div style="font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px;">{{ t.mapFilterTitle }}
+                <div style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:400;" onClick="{{ toggleHideUnknown }}">
+                  <span style="font-size:11px; color:hsl(200 10% 45%);">{{ t.showUnknown }}</span>
+                  <div style="{{ hideUnknownTrackStyle }}">
+                    <div style="{{ hideUnknownKnobStyle }}"></div>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <div style="position:relative;">
+                  <input type="text" placeholder="{{ t.searchPlaceholder }}" value="{{ searchQuery }}" onChange="{{ onSearchChange }}" style="padding:8px 12px; border-radius:8px; border:1px solid hsl(200 15% 82%); font-size:12px; width:250px; font-family:inherit;" />
+                </div>
+                <sc-if value="{{ hasSearchQuery }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ clearSearch }}" style="padding:8px 12px; border-radius:8px; border:1px solid hsl(200 15% 82%); background:#fff; font-size:12px; cursor:pointer; color:hsl(200 25% 30%);">{{ t.clearSearch }}</button>
+                </sc-if>
+                <button onClick="{{ clearMapFilters }}" style="padding:8px 12px; border-radius:8px; border:1px solid hsl(8 50% 60%); background:#fff; font-size:12px; cursor:pointer; color:hsl(8 50% 45%);">{{ t.clearFilter }}</button>
+                <button onClick="{{ exportPdf }}" style="padding:8px 14px; border-radius:8px; border:none; background:#C43D82; color:#fff; font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">{{ t.exportPdf }} ({{ currentN }} {{ t.ray }})</button>
+              </div>
+            </div>
+            <sc-if value="{{ hasSearchQuery }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:11px; color:hsl(329 40% 38%); background:hsl(320 30% 45% / .08); padding:8px 12px; border-radius:8px;">{{ t.searchingPre }} "{{ searchQuery }}" {{ t.searchingPost }}</div>
+            </sc-if>
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                <span style="width:20px; height:20px; border-radius:999px; background:#C43D82; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">1</span>
+                <span style="font-size:12px; font-weight:600; color:hsl(200 25% 20%);">{{ t.step1Map }}</span>
+                <span style="font-size:11px; color:hsl(200 10% 45%);">{{ t.step1MapHint }}</span>
+              </div>
+              <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center; padding-left:28px;">
+                <button onClick="{{ mapAllTab.onClick }}" style="{{ mapAllTab.style }}">{{ mapAllTab.icon }} {{ mapAllTab.label }}</button>
+                <button onClick="{{ mapVulnerabilityTab.onClick }}" style="{{ mapVulnerabilityTab.style }}">{{ mapVulnerabilityTab.icon }} {{ mapVulnerabilityTab.label }}</button>
+              </div>
+              <div style="display:flex; flex-wrap:nowrap; gap:8px; overflow-x:auto; padding-left:28px;">
+                <sc-for list="{{ mapDimensionTabs }}" as="dim" hint-placeholder-count="2">
+                  <button onClick="{{ dim.onClick }}" style="{{ dim.style }}">{{ dim.icon }} {{ dim.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+            <div style="border-top:1px solid hsl(200 15% 92%); padding-top:12px;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                <span style="width:20px; height:20px; border-radius:999px; background:#C43D82; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">2</span>
+                <span style="font-size:12px; font-weight:600; color:hsl(200 25% 20%);">{{ t.step2Map }}</span>
+                <span style="font-size:11px; color:hsl(200 10% 45%);">{{ t.step2MapHint }}</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:8px; padding-left:28px;">
+                <sc-for list="{{ mapSectionToggles }}" as="grp" hint-placeholder-count="2">
+                  <div>
+                    <div style="font-size:10px; font-weight:600; color:hsl(329 53% 42%); margin-bottom:4px;">{{ grp.dimLabel }}</div>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:flex-start;">
+                      <sc-for list="{{ grp.toggles }}" as="st" hint-placeholder-count="4">
+                        <div style="display:inline-flex; flex-direction:column; gap:6px;">
+                          <button onClick="{{ st.onClick }}" style="{{ st.style }}">{{ st.label }}</button>
+                          <sc-if value="{{ st.hasInlineVp }}" hint-placeholder-val="{{ false }}">
+                            <div style="display:flex; flex-direction:column; gap:5px;">
+                              <sc-if value="{{ st.inlineVp.hasTopOptions }}" hint-placeholder-val="{{ false }}">
+                                <div style="display:flex; flex-wrap:wrap; gap:4px; padding:6px 8px; background:hsl(329 53% 62% / .06); border:1px dashed hsl(329 53% 62% / .35); border-radius:8px;">
+                                  <sc-for list="{{ st.inlineVp.options }}" as="opt" hint-placeholder-count="3">
+                                    <button onClick="{{ opt.onClick }}" style="{{ opt.style }}">{{ opt.label }}</button>
+                                  </sc-for>
+                                </div>
+                              </sc-if>
+                              <sc-for list="{{ st.inlineVp.groups }}" as="g" hint-placeholder-count="0">
+                                <div style="display:flex; flex-direction:column; gap:3px; padding-left:14px; border-left:2px solid hsl(329 53% 62% / .3); margin-left:2px;">
+                                  <span style="font-size:9px; font-weight:600; color:hsl(200 10% 45%);">↳ {{ g.label }}</span>
+                                  <div style="display:flex; flex-wrap:wrap; gap:4px; padding:5px 7px; background:hsl(200 20% 96%); border:1px dashed hsl(200 15% 80%); border-radius:8px;">
+                                    <sc-for list="{{ g.options }}" as="opt2" hint-placeholder-count="2">
+                                      <button onClick="{{ opt2.onClick }}" style="{{ opt2.style }}">{{ opt2.label }}</button>
+                                    </sc-for>
+                                  </div>
+                                </div>
+                              </sc-for>
+                            </div>
+                          </sc-if>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <sc-if value="{{ hasMapValuePickers }}" hint-placeholder-val="{{ false }}">
+              <div style="border-top:1px solid hsl(200 15% 92%); padding-top:12px;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                  <span style="width:20px; height:20px; border-radius:999px; background:#C43D82; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">3</span>
+                  <span style="font-size:12px; font-weight:600; color:hsl(200 25% 20%);">{{ t.step3Map }}</span>
+                  <span style="font-size:11px; color:hsl(200 10% 45%);">{{ t.step3MapHint }}{{ mapValuePickerRiskHint }}</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px; padding-left:28px;">
+                  <sc-for list="{{ mapValuePickers }}" as="vp" hint-placeholder-count="1">
+                    <div>
+                      <div style="font-size:10px; font-weight:600; color:hsl(200 25% 30%); margin-bottom:4px;">{{ vp.label }}</div>
+                      <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                        <sc-for list="{{ vp.options }}" as="opt" hint-placeholder-count="3">
+                          <button onClick="{{ opt.onClick }}" style="{{ opt.style }}">{{ opt.label }}</button>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ hasMapFilterSummary }}" hint-placeholder-val="{{ false }}">
+            <div style="background:hsl(320 30% 45% / .06); border:1px solid hsl(329 53% 62% / .25); border-radius:10px; padding:8px 12px; font-size:11px; color:hsl(329 40% 30%);">{{ t.filterUsedPrefix }}{{ mapFilterSummary }}</div>
+          </sc-if>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+            <sc-for list="{{ statCards }}" as="card" hint-placeholder-count="4">
+              <div style="background:#fff; border:1px solid hsl(200 15% 88%); border-radius:12px; padding:16px; display:flex; align-items:center; gap:12px;">
+                <div style="{{ card.iconWrapStyle }}">{{ card.icon }}</div>
+                <div>
+                  <div style="font-size:24px; font-weight:700;">{{ card.value }}</div>
+                  <div style="font-size:12px; color:hsl(200 10% 45%);">{{ card.label }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="background:#fff; border:1px solid hsl(200 15% 88%); border-radius:12px; overflow:hidden; height:560px;">
+            <div ref="{{ mapRef }}" style="height:100%; width:100%;"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ================= STATISTICS ================= -->
+      <div style="{{ statisticsWrapperStyle }}">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+
+          <div style="background:#fff; border:1px solid hsl(200 15% 88%); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:16px;">
+            <div style="font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:space-between; gap:6px;">
+              <span>{{ t.statFilterTitle }} <span style="font-weight:400; color:hsl(200 10% 45%); font-size:11px;">{{ t.statFilterOrder }}</span></span>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:400;" onClick="{{ toggleHideUnknown }}">
+                  <span style="font-size:11px; color:hsl(200 10% 45%);">{{ t.showUnknown }}</span>
+                  <div style="{{ hideUnknownTrackStyle }}">
+                    <div style="{{ hideUnknownKnobStyle }}"></div>
+                  </div>
+                </div>
+                <button onClick="{{ clearStatFilters }}" style="padding:6px 12px; border-radius:8px; border:1px solid hsl(8 50% 60%); background:#fff; font-size:11px; cursor:pointer; color:hsl(8 50% 45%);">{{ t.clearFilter }}</button>
+              </div>
+            </div>
+
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                <span style="width:20px; height:20px; border-radius:999px; background:#C43D82; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">1</span>
+                <span style="font-size:12px; font-weight:600; color:hsl(200 25% 20%);">{{ t.step1Stat }}</span>
+              </div>
+              <div style="display:flex; gap:8px; margin-bottom:8px; padding-left:28px; align-items:center;">
+                <button onClick="{{ allTab.onClick }}" style="{{ allTab.style }}">{{ allTab.icon }} {{ allTab.label }}</button>
+                <button onClick="{{ vulnerabilityTab.onClick }}" style="{{ vulnerabilityTab.style }}">{{ vulnerabilityTab.icon }} {{ vulnerabilityTab.label }}</button>
+              </div>
+              <div style="display:flex; flex-wrap:nowrap; gap:8px; overflow-x:auto; padding-left:28px;">
+                <sc-for list="{{ dimensionTabs }}" as="dim" hint-placeholder-count="9">
+                  <button onClick="{{ dim.onClick }}" style="{{ dim.style }}">{{ dim.icon }} {{ dim.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+
+            <sc-if value="{{ showSectionPicker }}" hint-placeholder-val="{{ true }}">
+              <div style="border-top:1px solid hsl(200 15% 92%); padding-top:16px;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                  <span style="width:20px; height:20px; border-radius:999px; background:#C43D82; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">2</span>
+                  <span style="font-size:12px; font-weight:600; color:hsl(200 25% 20%);">{{ t.step2Stat }}</span>
+                  <span style="font-size:11px; color:hsl(200 10% 45%);">{{ t.step2StatHint }}</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px; padding-left:28px;">
+                  <sc-for list="{{ sectionToggles }}" as="grp" hint-placeholder-count="2">
+                    <div>
+                      <div style="font-size:10px; font-weight:600; color:hsl(329 53% 42%); margin-bottom:4px;">{{ grp.dimLabel }}</div>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                      <sc-for list="{{ grp.toggles }}" as="st" hint-placeholder-count="3">
+                        <button onClick="{{ st.onClick }}" style="{{ st.style }}">{{ st.label }}</button>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showBreakdownSection }}" hint-placeholder-val="{{ true }}">
+              <div style="border-top:1px solid hsl(200 15% 92%); padding-top:16px;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                  <span style="width:20px; height:20px; border-radius:999px; background:#C43D82; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">3</span>
+                  <span style="font-size:12px; font-weight:600; color:hsl(200 25% 20%);">{{ t.step3Stat }}</span>
+                  <span style="font-size:11px; color:hsl(200 10% 45%);">{{ t.step3StatHint }}</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px; padding-left:28px;">
+                  <div>
+                    <button onClick="{{ noneBreakdownOption.onClick }}" style="{{ noneBreakdownOption.style }}">{{ noneBreakdownOption.label }}</button>
+                  </div>
+                  <sc-for list="{{ breakdownGroups }}" as="grp" hint-placeholder-count="3">
+                    <div>
+                      <div style="font-size:10px; font-weight:600; color:hsl(200 10% 55%); text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">{{ grp.dimLabel }}</div>
+                      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                        <sc-for list="{{ grp.options }}" as="bd" hint-placeholder-count="3">
+                          <button onClick="{{ bd.onClick }}" style="{{ bd.style }}">{{ bd.label }}</button>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <div style="border-top:1px solid hsl(200 15% 92%); padding-top:16px;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                <span style="width:20px; height:20px; border-radius:999px; background:#C43D82; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">4</span>
+                <span style="font-size:12px; font-weight:600; color:hsl(200 25% 20%);">{{ t.step4Stat }}</span>
+              </div>
+              <div style="display:flex; gap:6px; padding-left:28px;">
+                <button onClick="{{ setChartTable }}" style="{{ chartTypeBtnStyleTable }}">{{ t.chartTable }}</button>
+                <button onClick="{{ setChartBar }}" style="{{ chartTypeBtnStyleBar }}">{{ t.chartBar }}</button>
+                <button onClick="{{ setChartPie }}" style="{{ chartTypeBtnStylePie }}">{{ t.chartPie }}</button>
+              </div>
+            </div>
+          </div>
+
+          <sc-if value="{{ showStatResults }}" hint-placeholder-val="{{ true }}">
+          <div style="border:1px solid hsl(200 15% 88%); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:14px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+              <span style="font-size:12px; font-weight:600; color:hsl(200 25% 20%);">{{ t.resultsForFilter }}</span>
+              <sc-if value="{{ hasStatFilterSummary }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:11px; color:hsl(200 10% 45%); flex:1;">{{ statFilterSummary }}</span>
+              </sc-if>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button onClick="{{ exportChartsPdf }}" style="padding:7px 14px; border-radius:8px; border:1px solid #C43D82; background:#C43D82; color:#fff; font-size:12px; font-weight:600; cursor:pointer;">{{ t.exportChartsPdf }}</button>
+                <button onClick="{{ exportSummaryCsv }}" style="padding:7px 14px; border-radius:8px; border:1px solid hsl(200 15% 80%); background:#fff; color:hsl(200 25% 25%); font-size:12px; font-weight:600; cursor:pointer;">{{ t.exportChartsCsv }}</button>
+              </div>
+            </div>
+
+          <sc-for list="{{ sectionViews }}" as="sec" hint-placeholder-count="3">
+            <div style="background:#fff; border:1px solid hsl(200 15% 88%); border-radius:12px; overflow:hidden;">
+              <div style="padding:10px 16px; background:hsl(200 20% 96%); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                <div>
+                  <span style="font-size:10px; font-weight:600; color:hsl(329 53% 42%); background:hsl(329 53% 62% / .1); padding:2px 8px; border-radius:999px; margin-right:8px;">{{ sec.dimLabel }}</span>
+                  <span style="font-weight:600; font-size:14px;">{{ sec.title }}</span>
+                  <span style="font-size:11px; color:hsl(329 40% 38%); font-style:italic; margin-left:8px;">{{ sec.note }}</span>
+                </div>
+                <div style="font-size:11px; color:hsl(200 10% 45%);">{{ sec.total }}</div>
+              </div>
+              <div style="padding:16px; display:flex; flex-direction:column; gap:14px;">
+
+                <sc-if value="{{ sec.isPie }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; flex-wrap:wrap; gap:24px; justify-content:center;">
+                    <sc-for list="{{ sec.pies }}" as="pie" hint-placeholder-count="2">
+                      <div style="display:flex; flex-direction:column; align-items:center; gap:8px; width:200px;">
+                        <div style="font-size:12px; font-weight:600; color:hsl(200 10% 45%);">{{ pie.cluster }}</div>
+                        <div style="{{ pie.donutStyle }}" onMouseMove="{{ pie.onDonutMove }}" onMouseLeave="{{ pie.onDonutLeave }}">
+                          <sc-for list="{{ pie.segs }}" as="lbl" hint-placeholder-count="3">
+                            <sc-if value="{{ lbl.showPieLabel }}" hint-placeholder-val="{{ false }}">
+                              <span style="{{ lbl.pieLabelStyle }}" onMouseEnter="{{ lbl.onEnter }}" onMouseMove="{{ lbl.onMove }}" onMouseLeave="{{ lbl.onLeave }}">{{ lbl.display }}</span>
+                            </sc-if>
+                          </sc-for>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:4px; width:100%;">
+                          <sc-for list="{{ pie.segs }}" as="seg" hint-placeholder-count="3">
+                            <div style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:default;" onMouseEnter="{{ seg.onEnter }}" onMouseMove="{{ seg.onMove }}" onMouseLeave="{{ seg.onLeave }}">
+                              <span style="{{ seg.dotStyle }}"></span>
+                              <sc-if value="{{ seg.isFemale }}" hint-placeholder-val="{{ false }}">
+                                <svg width="13" height="13" viewBox="0 0 24 24" style="color:hsl(200 10% 40%); flex-shrink:0;"><circle cx="12" cy="6" r="4" fill="currentColor"/><path d="M8 11 L4 21 L9.5 21 L9.5 24 L14.5 24 L14.5 21 L20 21 L16 11 Z" fill="currentColor"/></svg>
+                              </sc-if>
+                              <sc-if value="{{ seg.isMale }}" hint-placeholder-val="{{ false }}">
+                                <svg width="13" height="13" viewBox="0 0 24 24" style="color:hsl(200 10% 40%); flex-shrink:0;"><circle cx="12" cy="6" r="4" fill="currentColor"/><rect x="7" y="11" width="10" height="13" rx="3" fill="currentColor"/></svg>
+                              </sc-if>
+                              <span style="flex:1; color:hsl(200 25% 20%);">{{ seg.label }}</span>
+                              <span style="font-weight:600;">{{ seg.display }}</span>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ sec.isBar }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; flex-direction:column; gap:10px;">
+                    <sc-for list="{{ sec.rowsParsed }}" as="row" hint-placeholder-count="4">
+                      <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="width:200px; flex-shrink:0; font-size:12px; color:hsl(200 25% 20%); display:flex; align-items:center; gap:5px;">
+                          <sc-if value="{{ row.isFemale }}" hint-placeholder-val="{{ false }}">
+                            <svg width="13" height="13" viewBox="0 0 24 24" style="color:hsl(200 10% 40%); flex-shrink:0;"><circle cx="12" cy="6" r="4" fill="currentColor"/><path d="M8 11 L4 21 L9.5 21 L9.5 24 L14.5 24 L14.5 21 L20 21 L16 11 Z" fill="currentColor"/></svg>
+                          </sc-if>
+                          <sc-if value="{{ row.isMale }}" hint-placeholder-val="{{ false }}">
+                            <svg width="13" height="13" viewBox="0 0 24 24" style="color:hsl(200 10% 40%); flex-shrink:0;"><circle cx="12" cy="6" r="4" fill="currentColor"/><rect x="7" y="11" width="10" height="13" rx="3" fill="currentColor"/></svg>
+                          </sc-if>
+                          <span>{{ row.label }}</span>
+                        </div>
+                        <div style="flex:1; display:flex; flex-direction:column; gap:3px;">
+                          <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="2">
+                            <div style="display:flex; align-items:center; gap:6px; cursor:default;" onMouseEnter="{{ cell.onEnter }}" onMouseMove="{{ cell.onMove }}" onMouseLeave="{{ cell.onLeave }}">
+                              <div style="width:110px; flex-shrink:0; font-size:10px; font-weight:600; color:hsl(200 10% 45%); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ cell.cluster }}</div>
+                              <div style="{{ cell.barTrackStyle }}">
+                                <div style="{{ cell.barFillStyle }}">
+                                  <sc-if value="{{ cell.showInlineLabel }}" hint-placeholder-val="{{ false }}">
+                                    <span style="color:#fff; font-size:9px; font-weight:700; white-space:nowrap;">{{ cell.inlineLabel }}</span>
+                                  </sc-if>
+                                </div>
+                              </div>
+                              <div style="width:90px; flex-shrink:0; text-align:right; font-size:11px; font-weight:600; color:hsl(200 25% 20%);">{{ cell.display }}</div>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-for>
+                    <div style="display:flex; flex-wrap:wrap; gap:14px; margin-top:4px; padding-top:10px; border-top:1px solid hsl(200 15% 92%);">
+                      <sc-for list="{{ sec.legend }}" as="lg" hint-placeholder-count="2">
+                        <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:hsl(200 10% 45%);">
+                          <span style="{{ lg.dotStyle }}"></span>{{ lg.name }}
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ sec.isTable }}" hint-placeholder-val="{{ false }}">
+                  <div style="overflow-x:auto;">
+                    <table style="border-collapse:collapse; width:100%; font-size:12px; border:1px solid hsl(200 15% 80%);">
+                      <thead>
+                        <tr style="background:hsl(200 20% 95%);">
+                          <th style="text-align:left; padding:6px 10px; border:1px solid hsl(200 15% 80%); color:hsl(200 10% 40%); font-weight:600;"></th>
+                          <sc-for list="{{ sec.columnHeaders }}" as="col" hint-placeholder-count="2">
+                            <th style="text-align:right; padding:6px 10px; border:1px solid hsl(200 15% 80%); color:hsl(200 10% 40%); font-weight:600; white-space:nowrap;">{{ col }}</th>
+                          </sc-for>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <sc-for list="{{ sec.rowsParsed }}" as="row" hint-placeholder-count="4">
+                          <tr style="background:{{ row.rowBg }};">
+                            <td style="padding:6px 10px; border:1px solid hsl(200 15% 85%); color:hsl(200 25% 20%); font-weight:600; white-space:nowrap;">{{ row.label }}</td>
+                            <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="2">
+                              <td style="padding:6px 10px; border:1px solid hsl(200 15% 85%); text-align:right; color:hsl(200 25% 25%);">{{ cell.display }}</td>
+                            </sc-for>
+                          </tr>
+                        </sc-for>
+                      </tbody>
+                    </table>
+                  </div>
+                </sc-if>
+
+              </div>
+            </div>
+          </sc-for>
+          </div>
+          </sc-if>
+
+        </div>
+      </div>
+
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ chartTooltipVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ chartTooltipStyle }}">{{ chartTooltipText }}</div>
+  </sc-if>
+
+  <div id="print-charts-report" style="position:absolute; left:-9999px; top:0; width:800px; background:#fff; padding:24px; font-family:'TH Sarabun New','Sarabun', sans-serif; color:#111;">
+    <div style="font-size:20px; font-weight:700; margin-bottom:4px;">{{ t.reportStatsTitle }}</div>
+    <div style="font-size:12px; color:#555; margin-bottom:20px;">{{ printChartsSubtitle }}</div>
+    <sc-for list="{{ printChartSections }}" as="psec" hint-placeholder-count="3">
+      <div style="margin-bottom:20px; page-break-inside:avoid;">
+        <div style="font-size:14px; font-weight:700; margin-bottom:2px;">{{ psec.title }}</div>
+        <div style="font-size:11px; color:#666; margin-bottom:8px;">{{ psec.dimLabel }} · {{ psec.total }}</div>
+
+        <sc-if value="{{ psec.isBar }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ psec.rows }}" as="prow" hint-placeholder-count="3">
+            <div style="margin-bottom:6px;">
+              <div style="font-size:11px; font-weight:600; margin-bottom:3px;">{{ prow.label }}</div>
+              <sc-for list="{{ prow.cells }}" as="pcell" hint-placeholder-count="2">
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+                  <div style="width:110px; flex-shrink:0; font-size:10px; color:#555;">{{ pcell.cluster }}</div>
+                  <div style="flex:1; height:10px; background:#eee; border-radius:4px; overflow:hidden;">
+                    <div style="{{ pcell.fillStyle }}"></div>
+                  </div>
+                  <div style="width:60px; text-align:right; font-size:10px; font-weight:600;">{{ pcell.display }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </sc-if>
+
+        <sc-if value="{{ psec.isPie }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-wrap:wrap; gap:16px;">
+            <sc-for list="{{ psec.pies }}" as="ppie" hint-placeholder-count="2">
+              <div style="width:220px;">
+                <div style="font-size:11px; font-weight:600; color:#555; margin-bottom:4px;">{{ ppie.cluster }}</div>
+                <div style="{{ ppie.donutStyle }}">
+                  <sc-for list="{{ ppie.segs }}" as="plbl" hint-placeholder-count="3">
+                    <sc-if value="{{ plbl.showPieLabel }}" hint-placeholder-val="{{ false }}">
+                      <span style="{{ plbl.pieLabelStyle }}">{{ plbl.display }}</span>
+                    </sc-if>
+                  </sc-for>
+                </div>
+                <div style="margin-top:8px;">
+                <sc-for list="{{ ppie.segs }}" as="pseg" hint-placeholder-count="3">
+                  <div style="display:flex; align-items:center; gap:6px; font-size:10px; margin-bottom:2px;">
+                    <span style="{{ pseg.dotStyle }}"></span>
+                    <span style="flex:1; color:#333;">{{ pseg.label }}</span>
+                    <span style="font-weight:700;">{{ pseg.display }}</span>
+                  </div>
+                </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+
+  <div id="print-report" style="position:absolute; left:-9999px; top:0; width:800px; background:#fff; padding:24px; font-family:'TH Sarabun New','Sarabun', sans-serif; color:#111;">
+    <div style="font-size:20px; font-weight:700; margin-bottom:4px;">{{ t.reportDataTitle }}</div>
+    <div style="font-size:12px; color:#555; margin-bottom:8px;">{{ printSubtitle }}</div>
+    <sc-if value="{{ hasPrintFilterList }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-bottom:16px;">
+        <div style="font-size:11px; font-weight:700; color:#333; margin-bottom:4px;">{{ t.filtersUsed }}</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <sc-for list="{{ printFilterList }}" as="pf" hint-placeholder-count="2">
+            <div style="font-size:11px; padding:3px 8px; border:1px solid #ccc; border-radius:6px; background:#f7f7f7;">{{ pf.text }}</div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+    <div ref="{{ printMapRef }}" style="width:100%; height:340px; margin-bottom:16px; border:1px solid #ccc;"></div>
+    <table style="width:100%; border-collapse:collapse; font-size:11px;">
+      <thead>
+        <tr style="background:#eee;">
+          <th style="border:1px solid #ccc; padding:4px 6px; text-align:left;">ID</th>
+          <th style="border:1px solid #ccc; padding:4px 6px; text-align:left;">{{ t.colHouseNo }}</th>
+          <th style="border:1px solid #ccc; padding:4px 6px; text-align:left;">{{ t.colCommunity }}</th>
+          <th style="border:1px solid #ccc; padding:4px 6px; text-align:left;">{{ t.colDistrict }}</th>
+          <th style="border:1px solid #ccc; padding:4px 6px;">{{ t.sexCol }}</th>
+          <th style="border:1px solid #ccc; padding:4px 6px;">{{ t.colAge }}</th>
+          <th style="border:1px solid #ccc; padding:4px 6px; text-align:left;">ADL</th>
+          <th style="border:1px solid #ccc; padding:4px 6px; text-align:left;">{{ t.colChronic }}</th>
+          <th style="border:1px solid #ccc; padding:4px 6px; text-align:left;">{{ t.colCoords }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <sc-for list="{{ printRows }}" as="pr" hint-placeholder-count="3">
+          <tr>
+            <td style="border:1px solid #ccc; padding:4px 6px;">{{ pr.id }}</td>
+            <td style="border:1px solid #ccc; padding:4px 6px;">{{ pr.houseNo }}</td>
+            <td style="border:1px solid #ccc; padding:4px 6px;">{{ pr.communityLabel }}</td>
+            <td style="border:1px solid #ccc; padding:4px 6px;">{{ pr.districtLabel }}</td>
+            <td style="border:1px solid #ccc; padding:4px 6px; text-align:center;">{{ pr.sex }}</td>
+            <td style="border:1px solid #ccc; padding:4px 6px; text-align:center;">{{ pr.age }}</td>
+            <td style="border:1px solid #ccc; padding:4px 6px;">{{ pr.adlGroup }}</td>
+            <td style="border:1px solid #ccc; padding:4px 6px;">{{ pr.hasChronic }}</td>
+            <td style="border:1px solid #ccc; padding:4px 6px;"><a href="{{ pr.mapUrl }}" style="color:#0d6efd; text-decoration:underline;">{{ pr.coords }}</a></td>
+          </tr>
+        </sc-for>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+const COMMUNITY_COLORS = {
+  1: "#C43D82", 2: "#CD4796", 3: "#DD6096", 4: "#E56D97", 5: "#EE7996",
+  6: "#F27F97", 7: "#F7B0C0", 8: "#C43D82", 9: "#CD4796", 10: "#DD6096",
+  11: "#E56D97", 12: "#EE7996", 13: "#F27F97", 14: "#F7B0C0", 15: "#C43D82",
+};
+const CHART_COLORS = [
+  "#C43D82", "#CD4796", "#DD6096", "#E56D97", "#EE7996", "#F27F97", "#F7B0C0",
+];
+const DIMENSIONS = [
+  { key: "general", label: "ลักษณะทางประชากร", icon: "👥" },
+  { key: "health", label: "สุขภาพ", icon: "❤️" },
+  { key: "economy", label: "เศรษฐกิจ", icon: "💰" },
+  { key: "society", label: "สังคม", icon: "✨" },
+  { key: "digital", label: "เทคโนโลยีและนวัตกรรม", icon: "📱" },
+  { key: "environment", label: "สิ่งแวดล้อมและความปลอดภัย", icon: "🛡️" },
+  { key: "agingReadiness", label: "ความพร้อมสู่วัยสูงอายุ", icon: "🌱" },
+  { key: "supportNeeds", label: "ความต้องการการสนับสนุน", icon: "🤝" },
+  { key: "vulnerability", label: "ดัชนีระดับความเปราะบาง", icon: "⚠️" },
+];
+const ALL_DIM_KEYS = DIMENSIONS.map((d) => d.key);
+const MAP_DIMENSIONS = ALL_DIM_KEYS.filter((k) => k !== "kr");
+
+class Component extends DCLogic {
+  state = {
+    view: "overview",
+    lang: "th",
+    district: "all",
+    selectedDimensions: [],
+    chartType: "table",
+    breakdownBy: [],
+    selectedSectionKeys: [],
+    mapSelectedDimensions: [],
+    mapSelectedSectionKeys: [],
+    mapSelectedValues: {},
+    selectedClustersPatumwan: [],
+    selectedClustersPravet: [],
+    selectedClustersAll: [],
+    selectedSubsPatumwan: {},
+    selectedSubsPravet: {},
+    selectedSubsAll: {},
+    searchQuery: "",
+    printHouseRecords: null,
+    isPrinting: false,
+    hideUnknown: true,
+    patumwanStats: null,
+    pravetStats: null,
+    surveyRows: null,
+    questions: null,
+    chartTooltip: null,
+  };
+
+  showChartTooltip = (e, text) => {
+    this.setState({ chartTooltip: { x: e.clientX, y: e.clientY, text } });
+  };
+  moveChartTooltip = (e) => {
+    if (!this.state.chartTooltip) return;
+    this.setState((s) => ({ chartTooltip: { ...s.chartTooltip, x: e.clientX, y: e.clientY } }));
+  };
+  hideChartTooltip = () => {
+    this.setState({ chartTooltip: null });
+  };
+
+  t(key) {
+    const i = this._i18n; if (!i) return key;
+    const L = this.state.lang || "th";
+    return (i.UI[L] && i.UI[L][key] != null) ? i.UI[L][key] : (i.UI.th[key] != null ? i.UI.th[key] : key);
+  }
+  tObj() {
+    const i = this._i18n; if (!i) return {};
+    const L = this.state.lang || "th";
+    return { ...i.UI.th, ...(i.UI[L] || {}) };
+  }
+  tv(v) {
+    if (v == null) return v;
+    const L = this.state.lang || "th"; if (L === "th") return v;
+    const V = this._i18n && this._i18n.VALUE_EN; if (!V) return v;
+    if (V[v] != null) return V[v];
+    const str = String(v);
+    if (str.includes(" / ")) return str.split(" / ").map((p) => (V[p] != null ? V[p] : p)).join(" / ");
+    if (str.includes(" \u00d7 ")) return str.split(" \u00d7 ").map((p) => (V[p] != null ? V[p] : p)).join(" \u00d7 ");
+    return v;
+  }
+  tvCluster(c) {
+    if (c == null) return c;
+    if ((this.state.lang || "th") === "th") return c;
+    const V = this._i18n && this._i18n.VALUE_EN;
+    if (V && V[c] != null) return V[c];
+    const m = String(c).match(/^(.*) \((\d+) ชุมชนย่อย\)$/);
+    if (m) return m[1] + " (" + m[2] + " " + this.t("subCommunities") + ")";
+    return c;
+  }
+  dimEn(key, thaiFallback) {
+    const i = this._i18n; if (!i || (this.state.lang || "th") === "th") return thaiFallback;
+    return i.DIM_EN[key] != null ? i.DIM_EN[key] : thaiFallback;
+  }
+  dimShort(thaiLabel) {
+    const i = this._i18n; if (!i || (this.state.lang || "th") === "th") return thaiLabel;
+    return i.DIM_SHORT_EN[thaiLabel] != null ? i.DIM_SHORT_EN[thaiLabel] : thaiLabel;
+  }
+  qEn(qkey, thaiLabel) {
+    const i = this._i18n; if (!i || (this.state.lang || "th") === "th") return thaiLabel;
+    return i.Q_EN[qkey] != null ? i.Q_EN[qkey] : thaiLabel;
+  }
+
+  mapContainerRef = React.createRef();
+  leafletMap = null;
+  markersLayer = null;
+  printMapRef = React.createRef();
+  printLeafletMap = null;
+  printMarkersLayer = null;
+
+  componentDidMount() {
+    this.loadData();
+    window.__elderMapExportHouse = (houseId) => this.exportHouseFromPopup(houseId);
+    window.__elderMapNavigate = (lat, lng) => {
+      const url = "https://www.google.com/maps/dir/?api=1&destination=" + lat + "," + lng;
+      const w = window.open(url, "_blank", "noopener");
+      if (!w) { try { window.top.location.href = url; } catch (e) { location.href = url; } }
+    };
+    this.mapInitPoll = setInterval(() => {
+      if (this.leafletMap) { clearInterval(this.mapInitPoll); return; }
+      if (this.state.surveyRows && this.mapContainerRef.current && this.mapContainerRef.current.offsetWidth > 0) {
+        this.initMapIfReady();
+      }
+    }, 300);
+  }
+
+  componentWillUnmount() {
+    if (this.mapInitPoll) clearInterval(this.mapInitPoll);
+  }
+
+  async loadData() {
+    const [statsMod, rowsMod, qMod, i18nMod] = await Promise.all([
+      import("./data/statisticsData.js"),
+      import("./data/surveyRows.js"),
+      import("./data/questions.js"),
+      import("./data/i18n.js"),
+    ]);
+    this._i18n = i18nMod;
+    const surveyRows = rowsMod.surveyRows.map((r) => {
+      return { ...r, elderId: r.surveyId || "-" };
+    });
+    this.setState({
+      patumwanStats: statsMod.patumwanStats,
+      pravetStats: statsMod.pravetStats,
+      surveyRows,
+      questions: qMod.QUESTIONS,
+      breakdownQuestions: qMod.BREAKDOWN_QUESTIONS,
+    }, () => this.initMapIfReady());
+  }
+
+  filterSignature(s) {
+    const { clustersKey, subsKey } = this.getFilterKeys(s.district);
+    return JSON.stringify([s.district, s[clustersKey], s[subsKey]]);
+  }
+
+  getFilterKeys(district) {
+    if (district === "patumwan") return { clustersKey: "selectedClustersPatumwan", subsKey: "selectedSubsPatumwan" };
+    if (district === "pravet") return { clustersKey: "selectedClustersPravet", subsKey: "selectedSubsPravet" };
+    return { clustersKey: "selectedClustersAll", subsKey: "selectedSubsAll" };
+  }
+
+  getDistrictStats(district) {
+    if (district === "patumwan") return this.state.patumwanStats;
+    if (district === "pravet") return this.state.pravetStats;
+    return this.buildCombinedStats();
+  }
+
+  buildCombinedStats() {
+    const s = this.state;
+    if (!s.patumwanStats || !s.pravetStats) return null;
+    return {
+      districtName: "ทุกเขต",
+      totalSample: s.patumwanStats.totalSample + s.pravetStats.totalSample,
+      clusters: [
+        ...s.patumwanStats.clusters.filter((c) => c !== "รวม"),
+        ...s.pravetStats.clusters.filter((c) => c !== "รวม"),
+        "รวม",
+      ],
+      communities: [...s.patumwanStats.communities, ...s.pravetStats.communities],
+      kr: [],
+    };
+  }
+
+  getDistrictRows(s) {
+    return s.district === "all" ? s.surveyRows : s.surveyRows.filter((r) => r.district === s.district);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (!prevState) return;
+    const mapVisible = this.state.view === "dashboard" && this.mapContainerRef.current && this.mapContainerRef.current.offsetWidth > 0;
+    if (this.state.surveyRows && !this.leafletMap && mapVisible) {
+      this.initMapIfReady();
+    }
+    const sigChanged = this.filterSignature(prevState) !== this.filterSignature(this.state);
+    if (this.leafletMap && this.state.surveyRows && (sigChanged || prevState.view !== this.state.view)) {
+      this.updateMarkers();
+    }
+    if (prevState.view !== this.state.view && this.state.view === "dashboard") {
+      setTimeout(() => {
+        if (!this.leafletMap) { this.initMapIfReady(); return; }
+        this.leafletMap.invalidateSize();
+        this.updateMarkers();
+      }, 80);
+    }
+  }
+
+  initMapIfReady() {
+    if (this.leafletMap || !this.mapContainerRef.current) return;
+    if (this.mapContainerRef.current.offsetWidth === 0) return;
+    const tryInit = () => {
+      if (!window.L) { setTimeout(tryInit, 100); return; }
+      if (this.leafletMap || !this.mapContainerRef.current) return;
+      const L = window.L;
+      this.leafletMap = L.map(this.mapContainerRef.current, {
+        center: [13.72, 100.6], zoom: 12, zoomControl: true,
+      });
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; OpenStreetMap contributors', maxZoom: 19, crossOrigin: true,
+      }).addTo(this.leafletMap);
+      this.markersLayer = L.layerGroup().addTo(this.leafletMap);
+      this.updateMarkers();
+      setTimeout(() => { if (this.leafletMap) { this.leafletMap.invalidateSize(); this.updateMarkers(); } }, 150);
+      if (this.mapInitPoll) clearInterval(this.mapInitPoll);
+    };
+    tryInit();
+  }
+
+  initPrintMap() {
+    if (this.printLeafletMap || !this.printMapRef.current || !window.L) return;
+    const L = window.L;
+    this.printLeafletMap = L.map(this.printMapRef.current, {
+      center: [13.72, 100.6], zoom: 12, zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false,
+    });
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, crossOrigin: true }).addTo(this.printLeafletMap);
+    this.printMarkersLayer = L.layerGroup().addTo(this.printLeafletMap);
+  }
+
+  updatePrintMap(overrideRows) {
+    if (!this.printLeafletMap || !this.printMarkersLayer || !window.L) return;
+    const L = window.L;
+    this.printMarkersLayer.clearLayers();
+    const districtStats = this.getDistrictStats(this.state.district);
+    const clusterColor = {};
+    if (districtStats) districtStats.clusters.forEach((c, i) => { if (c !== "รวม") clusterColor[c] = CHART_COLORS[i % CHART_COLORS.length]; });
+    const groups = this.groupByLocation(overrideRows || this.getFilteredRows());
+    groups.forEach((group) => {
+      const color = clusterColor[group.records[0].clusterGroup] || "#666";
+      const size = Math.min(6 + group.records.length * 2, 16);
+      L.circleMarker([group.lat, group.lng], { radius: size, fillColor: color, color: "#fff", weight: 1.5, opacity: 1, fillOpacity: 0.85 }).addTo(this.printMarkersLayer);
+    });
+    this.printLeafletMap.invalidateSize();
+    if (groups.length > 0) {
+      const bounds = L.latLngBounds(groups.map((g) => [g.lat, g.lng]));
+      this.printLeafletMap.fitBounds(bounds, { padding: [20, 20], maxZoom: 16 });
+    }
+  }
+
+  exportHouseFromPopup(houseId) {
+    const records = (this._popupRecordsById || {})[houseId];
+    if (!records || records.length === 0) return;
+    this.setState({ printHouseRecords: records, isPrinting: true }, () => {
+      this.initPrintMap();
+      document.body.classList.add("print-mode-house");
+      setTimeout(() => {
+        this.updatePrintMap(records);
+        setTimeout(() => {
+          window.print();
+          document.body.classList.remove("print-mode-house");
+          this.setState({ printHouseRecords: null, isPrinting: false });
+        }, 500);
+      }, 50);
+    });
+  }
+
+  downloadCsv(filename, rows2d) {
+    const escapeCell = (v) => {
+      const str = v == null ? "" : String(v);
+      return /[",\n]/.test(str) ? '"' + str.replace(/"/g, '""') + '"' : str;
+    };
+    const csv = rows2d.map((row) => row.map(escapeCell).join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  exportChartsPdf() {
+    this.setState({ isPrinting: true });
+    document.body.classList.add("print-mode-charts");
+    setTimeout(() => {
+      window.print();
+      document.body.classList.remove("print-mode-charts");
+      this.setState({ isPrinting: false });
+    }, 100);
+  }
+
+  exportSummaryCsv() {
+    const sections = this._lastSectionViews || [];
+    const header = [this.t("csvTopic"), this.t("csvSubcat"), this.t("csvItem"), this.t("csvValue")];
+    const body = [];
+    if (this._lastStatFilterSummary) body.push([this.t("csvFilterUsed"), this._lastStatFilterSummary, "", ""]);
+    sections.forEach((sec) => {
+      (sec.rowsParsed || []).forEach((row) => {
+        (row.cells || []).forEach((cell) => {
+          body.push([sec.title, this.tvCluster(cell.cluster), row.label, cell.display]);
+        });
+      });
+    });
+    this.downloadCsv("elder-data-summary.csv", [header, ...body]);
+  }
+
+  groupByLocation(data) {
+    const map = new Map();
+    data.forEach((r) => {
+      const key = r.lat.toFixed(6) + "," + r.lng.toFixed(6);
+      if (!map.has(key)) map.set(key, { lat: r.lat, lng: r.lng, records: [] });
+      map.get(key).records.push(r);
+    });
+    return Array.from(map.values());
+  }
+
+  getPopupExtraColumns() {
+    return [
+      { label: "ADL", get: (r) => this.tv(r.adlGroup) },
+      { label: this.t("colChronic"), get: (r) => this.tv(r.hasChronic), riskValue: "มีโรคประจำตัว", rawGet: (r) => r.hasChronic },
+    ];
+  }
+
+  buildPopupContent(records) {
+    const first = records[0];
+    const extraCols = this.getPopupExtraColumns();
+    const males = records.filter((r) => r.sex === "ชาย").length;
+    const females = records.filter((r) => r.sex === "หญิง").length;
+    const avgAge = Math.round(records.reduce((s, r) => s + (r.age || 0), 0) / records.length);
+    const vulnOrder = ["เปราะบางระดับต่ำ", "เปราะบางระดับปานกลาง", "เปราะบางระดับสูง", "เปราะบางระดับสูงมาก"];
+    const vulnColors = ["#22c55e", "#f59e0b", "#f97316", "#ef4444"];
+    let vulnIdx = -1;
+    records.forEach((r) => { const i = vulnOrder.indexOf(r.vulnerabilityLevel); if (i > vulnIdx) vulnIdx = i; });
+    const vulnLabel = vulnIdx >= 0 ? this.tv(vulnOrder[vulnIdx].replace("เปราะบางระดับ", "")) : "-";
+    const vulnColor = vulnIdx >= 0 ? vulnColors[vulnIdx] : "#757575";
+    const districtLabel = this.tv(first.district === "patumwan" ? "เขตปทุมวัน" : "เขตประเวศ");
+    let html = '<div style="font-family:\'TH Sarabun New\',\'Sarabun\',sans-serif; min-width:260px; max-width:320px;">';
+    html += '<div style="background:linear-gradient(135deg,hsl(329,53%,45%),#C43D82); color:#fff; padding:10px 14px;">';
+    html += '<div style="font-size:14px; font-weight:700;">📍 ' + this.t("houseNo") + ' ' + (first.houseNo || "-") + '</div>';
+    html += '<div style="font-size:12px; opacity:.9; margin-top:2px;">' + first.community + ' (' + first.clusterGroup + ') · ' + districtLabel + '</div></div>';
+    html += '<div style="padding:10px 14px; background:#fff;">';
+    html += '<div style="display:flex; gap:8px; margin-bottom:8px;">';
+    html += '<div style="flex:1; text-align:center; padding:6px; background:#fce4ec; border-radius:6px;"><div style="font-size:17px; font-weight:700; color:hsl(329,53%,42%);">' + records.length + '</div><div style="font-size:10px; color:#64748b;">' + this.t("elders") + '</div></div>';
+    html += '<div style="flex:1.4; text-align:center; padding:6px; background:' + vulnColor + '1a; border-radius:6px;"><div style="font-size:13px; font-weight:700; color:' + vulnColor + ';">' + vulnLabel + '</div><div style="font-size:10px; color:#64748b;">' + this.t("vulnLevel") + '</div></div>';
+    html += '<div style="flex:1; text-align:center; padding:6px; background:#f5f5f5; border-radius:6px;"><div style="font-size:17px; font-weight:700; color:#757575;">' + avgAge + '</div><div style="font-size:10px; color:#64748b;">' + this.t("avgAge") + '</div></div>';
+    html += '</div>';
+    html += '<div style="max-height:200px; overflow-y:auto;"><table style="width:100%; font-size:11px;">';
+    html += '<thead><tr style="background:#f8fafc;"><th style="padding:4px 6px; text-align:left; color:#64748b;">ID</th><th style="padding:4px 6px; text-align:left; color:#64748b;">' + this.t("sexCol") + '</th><th style="padding:4px 6px; color:#64748b;">' + this.t("ageCol") + '</th>' +
+      extraCols.map((c) => '<th style="padding:4px 6px; color:#64748b;">' + c.label + '</th>').join('') +
+      '</tr></thead><tbody>';
+    records.forEach((r, i) => {
+      const bg = i % 2 === 0 ? "#fff" : "#f8fafc";
+      const ageColor = r.age >= 80 ? "#ef4444" : r.age >= 70 ? "#f97316" : "#ad1457";
+      const riskColor = (v) => v === "ใช่" || v === "มีโรคประจำตัว" ? "color:#ef4444; font-weight:600;" : "color:#64748b;";
+      html += '<tr style="background:' + bg + ';">' +
+        '<td style="padding:4px 6px; font-weight:500; color:#64748b;">' + (r.elderId || (i + 1)) + '</td>' +
+        '<td style="padding:4px 6px; font-weight:500;">' + this.tv(r.sex) + '</td>' +
+        '<td style="padding:4px 6px; text-align:center; color:' + ageColor + '; font-weight:600;">' + (r.age ?? "-") + '</td>' +
+        extraCols.map((c) => {
+          const raw = c.rawGet ? c.rawGet(r) : c.get(r);
+          const v = c.get(r);
+          const style = (c.riskValue && raw === c.riskValue) ? "color:#ef4444; font-weight:600;" : "color:#64748b;";
+          return '<td style="padding:4px 6px; text-align:center; ' + style + '">' + (v ?? "-") + '</td>';
+        }).join('') +
+      '</tr>';
+    });
+    html += '</tbody></table></div>';
+    const houseId = (first.elderId || first.houseNo || "h") + "-" + first.lat + "-" + first.lng;
+    this._popupRecordsById = this._popupRecordsById || {};
+    this._popupRecordsById[houseId] = records;
+    html += '<div style="display:flex; gap:6px; margin-top:8px;">';
+    html += "<button onclick='window.__elderMapExportHouse && window.__elderMapExportHouse(" + JSON.stringify(houseId) + ")' style=\"flex:1; padding:7px; border:none; border-radius:6px; background:#ad1457; color:#fff; font-size:11px; font-weight:600; cursor:pointer;\">" + this.t("exportHousePdf") + "</button>";
+    html += "<button onclick='window.__elderMapNavigate && window.__elderMapNavigate(" + first.lat + "," + first.lng + ")' style=\"flex:1; padding:7px; border:none; border-radius:6px; background:#3b82f6; color:#fff; font-size:11px; font-weight:600; cursor:pointer; text-align:center;\">" + this.t("navigate") + "</button>";
+    html += '</div>';
+    html += '</div></div>';
+    return html;
+  }
+
+  getFilteredRows() {
+    const s = this.state;
+    if (!s.surveyRows) return [];
+    let rows = this.getDistrictRows(s);
+    const query = (s.searchQuery || "").trim().toLowerCase();
+    if (query) {
+      return rows.filter((r) =>
+        (r.houseNo || "").toLowerCase().includes(query) ||
+        (r.elderId || "").toLowerCase().includes(query)
+      );
+    }
+    const { clustersKey, subsKey } = this.getFilterKeys(s.district);
+    const selectedClusters = s[clustersKey] || [];
+    const selectedSubs = s[subsKey] || {};
+    if (selectedClusters.length > 0) {
+      rows = rows.filter((r) => {
+        if (!selectedClusters.includes(r.clusterGroup)) return false;
+        const subs = selectedSubs[r.clusterGroup] || [];
+        return subs.length === 0 || subs.includes(r.community);
+      });
+    }
+    const mapKeys = s.mapSelectedSectionKeys || [];
+    const mapValues = s.mapSelectedValues || {};
+    if (mapKeys.length > 0) {
+      rows = rows.filter((r) => mapKeys.every((k) => {
+        const q = (s.questions || []).find((qq) => qq.dimension + "::" + qq.key === k);
+        if (!q) return true;
+        const chosen = mapValues[k] || [];
+        if (chosen.length > 0) return chosen.includes(q.get(r));
+        if (q.riskValue) return q.get(r) === q.riskValue;
+        return true;
+      }));
+    }
+    const chosenDevices = mapValues["health::deviceType"] || [];
+    if (chosenDevices.length > 0) {
+      rows = rows.filter((r) => chosenDevices.some((field) => r[field] === "ใช่"));
+    }
+    const chosenLine = mapValues["digital::lineUseGroup"] || [];
+    if (chosenLine.length > 0) rows = rows.filter((r) => chosenLine.includes(r.lineUseGroup));
+    const chosenFb = mapValues["digital::facebookUseGroup"] || [];
+    if (chosenFb.length > 0) rows = rows.filter((r) => chosenFb.includes(r.facebookUseGroup));
+    const chosenFallen = mapValues["environment::everFallen"] || [];
+    if (chosenFallen.length > 0) rows = rows.filter((r) => chosenFallen.includes(r.everFallen));
+    const chosenHomeRisk = mapValues["environment::homeHasRisk"] || [];
+    if (chosenHomeRisk.length > 0) rows = rows.filter((r) => chosenHomeRisk.includes(r.homeHasRisk));
+    return rows;
+  }
+
+  updateMarkers() {
+    if (!this.markersLayer || !window.L) return;
+    const L = window.L;
+    this.markersLayer.clearLayers();
+    const districtStats = this.getDistrictStats(this.state.district);
+    const clusterColor = {};
+    if (districtStats) districtStats.clusters.forEach((c, i) => { if (c !== "รวม") clusterColor[c] = CHART_COLORS[i % CHART_COLORS.length]; });
+    const data = this.getFilteredRows();
+    const groups = this.groupByLocation(data);
+    groups.forEach((group) => {
+      const color = clusterColor[group.records[0].clusterGroup] || "#666";
+      const size = Math.min(6 + group.records.length * 2, 16);
+      const marker = L.circleMarker([group.lat, group.lng], {
+        radius: size, fillColor: color, color: "#fff", weight: 2, opacity: 1, fillOpacity: 0.85,
+      });
+      marker.bindPopup(this.buildPopupContent(group.records), { maxWidth: 340 });
+      marker.on("mouseover", function () { this.openPopup(); });
+      marker.addTo(this.markersLayer);
+    });
+    if (groups.length > 0) {
+      const bounds = L.latLngBounds(groups.map((g) => [g.lat, g.lng]));
+      this.leafletMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
+    }
+  }
+
+  parseValue(v) {
+    if (!v) return null;
+    const m = String(v).match(/-?\d+(\.\d+)?/);
+    if (!m) return null;
+    return parseFloat(m[0]);
+  }
+
+  // ---- legacy static (KR) section renderer ----
+  buildSectionView(section, selectedClusters, chartType, labelColors, clusterCounts) {
+    const rows = section.rows;
+    const isPercentSection = rows.every((r) => selectedClusters.some((c) => (r.values[c] || "").includes("%")));
+    const useType = chartType === "table" ? "table" : (!isPercentSection ? "bar" : chartType);
+    const colorForLabel = (label, fallbackIdx) => (labelColors && (labelColors[label] || labelColors.__default)) || CHART_COLORS[fallbackIdx % CHART_COLORS.length];
+    const chartRows = useType === "table" ? rows : rows.filter((r) => r.label !== "รวม");
+    const colorByCluster = !!section.crossTab && useType !== "table";
+
+    const rowsParsed = chartRows.map((r, ri) => ({
+      label: r.label,
+      rowBg: ri % 2 === 1 ? "hsl(200 20% 98%)" : "#fff",
+      cells: selectedClusters.map((c, ci) => {
+        const raw = r.values[c];
+        const value = this.parseValue(raw);
+        return { cluster: c, value, raw, colorIdx: colorByCluster ? ci : ri };
+      }),
+    }));
+
+    if (isPercentSection && rows.length > 1 && useType !== "bar" && !rows.some((r) => r.label === "รวม")) {
+      rowsParsed.push({
+        label: "รวม", isTotalRow: true,
+        rowBg: "hsl(329 30% 96%)",
+        cells: selectedClusters.map((c) => {
+          const count = rows.reduce((sum, r) => {
+            const m = String(r.values[c] || "").match(/\((\d+)\)/);
+            return sum + (m ? parseInt(m[1], 10) : 0);
+          }, 0);
+          return { cluster: c, value: 100, raw: "100.0% (" + count + ")", colorIdx: -1, isTotalCell: true };
+        }),
+      });
+    }
+
+    let maxVal = 0;
+    rowsParsed.forEach((r) => r.cells.forEach((c) => { if (c.value != null && c.value > maxVal) maxVal = c.value; }));
+    if (maxVal <= 0) maxVal = 1;
+
+    rowsParsed.forEach((r) => r.cells.forEach((c) => {
+      const color = c.isTotalCell ? "hsl(329 15% 55%)" : (colorByCluster ? colorForLabel(c.cluster, c.colorIdx) : colorForLabel(r.label, c.colorIdx));
+      const pct = c.value != null ? Math.max(3, isPercentSection ? c.value : (c.value / maxVal * 100)) : 0;
+      c.barTrackStyle = "flex:1; height:14px; background:hsl(200 20% 94%); border-radius:999px; overflow:hidden; position:relative;";
+      c.barFillStyle = "height:100%; width:" + pct + "%; background:" + color + "; border-radius:999px; display:flex; align-items:center; justify-content:flex-end; box-sizing:border-box; padding-right:5px;";
+      c.pctVal = pct;
+      c.colorVal = color;
+      c.display = c.value == null ? "-" : (c.raw != null ? c.raw : (isPercentSection ? c.value + "%" : c.value));
+      c.showInlineLabel = isPercentSection && c.value != null && pct >= 16;
+      c.inlineLabel = c.display;
+      const tooltipText = this.tv(r.label) + " · " + this.tv(c.cluster) + ": " + c.display;
+      c.onEnter = (e) => this.showChartTooltip(e, tooltipText);
+      c.onMove = (e) => this.moveChartTooltip(e);
+      c.onLeave = () => this.hideChartTooltip();
+    }));
+
+    const legend = colorByCluster
+      ? selectedClusters.map((c, ci) => ({
+          name: clusterCounts && clusterCounts[c] != null ? this.tv(c) + " (" + clusterCounts[c] + ")" : this.tv(c),
+          dotStyle: "width:8px; height:8px; border-radius:999px; display:inline-block; background:" + colorForLabel(c, ci) + ";",
+        }))
+      : labelColors
+      ? chartRows.map((r, ri) => ({ name: this.tv(r.label), dotStyle: "width:8px; height:8px; border-radius:999px; display:inline-block; background:" + colorForLabel(r.label, ri) + ";" }))
+      : selectedClusters.map((c, ci) => ({
+          name: clusterCounts && clusterCounts[c] != null ? this.tv(c) + " (" + clusterCounts[c] + ")" : this.tv(c),
+          dotStyle: "width:8px; height:8px; border-radius:999px; display:inline-block; background:" + CHART_COLORS[ci % CHART_COLORS.length] + ";",
+        }));
+
+    let pies = [];
+    if (useType === "pie") {
+      pies = selectedClusters.map((c) => {
+        let cum = 0;
+        const segs = [];
+        const rawCounts = chartRows.map((r) => {
+          const m = String(r.values[c] || "").match(/\((\d+)\)/);
+          return m ? parseInt(m[1], 10) : 0;
+        });
+        const colTotal = rawCounts.reduce((a, b) => a + b, 0) || 1;
+        chartRows.forEach((r, ri) => {
+          const v = rawCounts[ri] / colTotal * 100;
+          if (v <= 0) return;
+          const color = colorForLabel(r.label, ri);
+          const midPct = cum + v / 2;
+          const angleRad = (midPct * 3.6 - 90) * Math.PI / 180;
+          const leftPct = 50 + 33 * Math.cos(angleRad);
+          const topPct = 50 + 33 * Math.sin(angleRad);
+          const segTooltip = this.tv(c) + " · " + this.tv(r.label) + ": " + v.toFixed(1) + "%";
+          segs.push({
+            label: r.label, display: v.toFixed(1) + "%",
+            gradFrom: cum, gradTo: cum + v, color,
+            dotStyle: "width:8px; height:8px; border-radius:999px; display:inline-block; background:" + color + ";",
+            showPieLabel: v >= 6,
+            pieLabelStyle: "position:absolute; left:" + leftPct + "%; top:" + topPct + "%; transform:translate(-50%,-50%); color:#fff; font-size:10px; font-weight:700; text-shadow:0 1px 2px rgba(0,0,0,.55); cursor:default;",
+            onEnter: (e) => this.showChartTooltip(e, segTooltip),
+            onMove: (e) => this.moveChartTooltip(e),
+            onLeave: () => this.hideChartTooltip(),
+          });
+          cum += v;
+        });
+        const gradient = segs.map((s) => s.color + " " + s.gradFrom + "% " + s.gradTo + "%").join(", ");
+        const onDonutMove = (e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+          const dx = e.clientX - cx, dy = e.clientY - cy;
+          if (Math.sqrt(dx * dx + dy * dy) > rect.width / 2) { this.hideChartTooltip(); return; }
+          let deg = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+          if (deg < 0) deg += 360;
+          const pct = deg / 3.6;
+          const seg = segs.find((sgm) => pct >= sgm.gradFrom && pct < sgm.gradTo);
+          if (seg) this.showChartTooltip(e, this.tv(c) + " · " + this.tv(seg.label) + ": " + seg.display);
+          else this.hideChartTooltip();
+        };
+        return {
+          cluster: c, segs,
+          donutStyle: "width:150px; height:150px; border-radius:50%; background:conic-gradient(" + (gradient || "hsl(200 20% 90%) 0% 100%") + "); position:relative; cursor:default;",
+          onDonutMove,
+          onDonutLeave: () => this.hideChartTooltip(),
+        };
+      });
+    }
+
+    return {
+      title: section.title, total: section.total || "", note: section.note || "", dimLabel: section.dimLabel || "",
+      isPie: useType === "pie", isBar: useType === "bar", isTable: useType === "table",
+      columnHeaders: selectedClusters.map((c) => this.tvCluster(c)),
+      rowsParsed: rowsParsed.map((r) => ({ ...r, labelRaw: r.label, label: this.tv(r.label), cells: (r.cells || []).map((c) => ({ ...c, cluster: this.tvCluster(c.cluster) })) })),
+      legend,
+      pies: pies.map((p) => ({ ...p, segs: p.segs.map((sg) => ({ ...sg, labelRaw: sg.label, label: this.tv(sg.label) })) })),
+    };
+  }
+
+  buildOverviewSexStats(dist) {
+    const ordered = [...dist].sort((a, b) => (/ชาย/.test(a.label) ? 0 : 1) - (/ชาย/.test(b.label) ? 0 : 1));
+    return ordered.map((d) => {
+      const isFemale = /หญิง/.test(d.label);
+      const isMale = /ชาย/.test(d.label);
+      const color = isMale ? CHART_COLORS[5] : (isFemale ? CHART_COLORS[0] : CHART_COLORS[2]);
+      const display = d.pct.toFixed(1) + "%";
+      const tooltip = this.tv(d.label) + ": " + display + " (" + d.count + " " + this.t("ray") + ")";
+      return {
+        label: this.tv(d.label), display, count: d.count, pct: d.pct,
+        segStyle: "flex:" + Math.max(d.pct, 0.5) + " 0 0%; background:" + color + "; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; overflow:hidden;",
+        isFemale, isMale: !isFemale,
+        color,
+        iconStyle: "color:#fff;",
+        bgTint: "color-mix(in srgb, " + color + " 16%, white)",
+        onEnter: (e) => this.showChartTooltip(e, tooltip),
+        onMove: (e) => this.moveChartTooltip(e),
+        onLeave: () => this.hideChartTooltip(),
+      };
+    });
+  }
+
+  buildOverviewAgeStats(dist) {
+    const AGE_SHADES = CHART_COLORS.slice(0, 6); // dark (old) -> light (young)
+    const sorted = dist.slice().sort((a, b) => {
+      const na = parseInt((a.label.match(/\d+/) || [0])[0], 10);
+      const nb = parseInt((b.label.match(/\d+/) || [0])[0], 10);
+      return na - nb;
+    });
+    const n = sorted.length;
+    return sorted.map((d, i) => {
+      const idx = n > 1 ? Math.round((1 - i / (n - 1)) * (AGE_SHADES.length - 1)) : 0;
+      const color = AGE_SHADES[idx];
+      const display = d.pct.toFixed(1) + "%";
+      const tooltip = this.tv(d.label) + ": " + display + " (" + d.count + " " + this.t("ray") + ")";
+      return {
+        label: this.tv(d.label), display, count: d.count, pct: d.pct,
+        segStyle: "flex:" + Math.max(d.pct, 0.5) + " 0 0%; background:" + color + "; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; overflow:hidden;",
+        color,
+        iconStyle: "color:#fff;",
+        bgTint: "color-mix(in srgb, " + color + " 16%, white)",
+        onEnter: (e) => this.showChartTooltip(e, tooltip),
+        onMove: (e) => this.moveChartTooltip(e),
+        onLeave: () => this.hideChartTooltip(),
+      };
+    });
+  }
+
+  buildOverviewDonut(dist, size) {
+    size = size || 170;
+    let cum = 0;
+    const shades = CHART_COLORS.slice(0, 6);
+    const known = dist.filter((d) => d.label !== "ไม่ทราบ");
+    const n = known.length;
+    let knownIdx = 0;
+    const segs = dist.map((d) => {
+      let color;
+      if (d.label === "ไม่ทราบ") {
+        color = "hsl(200 10% 75%)";
+      } else {
+        const idx = n > 1 ? Math.round((1 - knownIdx / (n - 1)) * (shades.length - 1)) : 5;
+        color = shades[idx];
+        knownIdx += 1;
+      }
+      const v = d.pct;
+      const midPct = cum + v / 2;
+      const angleRad = (midPct * 3.6 - 90) * Math.PI / 180;
+      const leftPct = 50 + 33 * Math.cos(angleRad);
+      const topPct = 50 + 33 * Math.sin(angleRad);
+      const display = v.toFixed(1) + "%";
+      const seg = {
+        label: this.tv(d.label), display,
+        gradFrom: cum, gradTo: cum + v, color,
+        dotStyle: "width:8px; height:8px; border-radius:999px; display:inline-block; background:" + color + ";",
+        showPieLabel: v >= 6,
+        pieLabelStyle: "position:absolute; left:" + leftPct + "%; top:" + topPct + "%; transform:translate(-50%,-50%); color:#fff; font-size:15px; font-weight:700; text-shadow:0 1px 2px rgba(0,0,0,.55); cursor:default;",
+        onEnter: (e) => this.showChartTooltip(e, this.tv(d.label) + ": " + display + " (" + d.count + " " + this.t("ray") + ")"),
+        onMove: (e) => this.moveChartTooltip(e),
+        onLeave: () => this.hideChartTooltip(),
+      };
+      cum += v;
+      return seg;
+    });
+    const gradient = segs.map((s) => s.color + " " + s.gradFrom + "% " + s.gradTo + "%").join(", ");
+    return {
+      segs,
+      donutStyle: "width:" + size + "px; height:" + size + "px; border-radius:50%; background:conic-gradient(" + (gradient || "hsl(200 20% 90%) 0% 100%") + "); position:relative; cursor:default;",
+    };
+  }
+
+  buildOverviewBar(dist) {
+    const maxRows = 4;
+    if (dist.length > maxRows) {
+      const head = dist.slice(0, maxRows - 1);
+      const rest = dist.slice(maxRows - 1);
+      const restCount = rest.reduce((a, d) => a + d.count, 0);
+      const restPct = rest.reduce((a, d) => a + d.pct, 0);
+      dist = head.concat([{ label: "อื่นๆ (" + rest.length + ")", count: restCount, pct: restPct }]);
+    }
+    let cum = 0;
+    const segs = dist.map((d, i) => {
+      const color = CHART_COLORS[i % CHART_COLORS.length];
+      const display = d.pct.toFixed(1) + "%";
+      const tooltip = d.label + ": " + display + " (" + d.count + " ราย)";
+      const widthPct = Math.max(d.pct, 0.5);
+      const leftPct = cum + widthPct / 2;
+      cum += widthPct;
+      const seg = {
+        label: d.label, display, color,
+        segStyle: "height:100%; width:" + widthPct + "%; background:" + color + "; display:flex; align-items:center; justify-content:center; overflow:hidden;",
+        inSegLabelStyle: "color:#fff; font-size:11px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 4px; text-shadow:0 1px 2px rgba(0,0,0,.35); cursor:default;",
+        dotStyle: "width:8px; height:8px; border-radius:999px; display:inline-block; background:" + color + ";",
+        labelStyle: "position:absolute; left:" + leftPct + "%; top:0; transform:translateX(-50%); font-size:12px; font-weight:600; color:hsl(200 25% 20%); white-space:nowrap; cursor:default;",
+        onEnter: (e) => this.showChartTooltip(e, tooltip),
+        onMove: (e) => this.moveChartTooltip(e),
+        onLeave: () => this.hideChartTooltip(),
+      };
+      return seg;
+    });
+    return {
+      stackStyle: "display:flex; width:100%; height:20px; border-radius:6px; overflow:hidden; background:hsl(200 20% 94%);",
+      segs,
+    };
+  }
+
+  // ---- live compute engine ----
+  computeDistribution(rows, question) {
+    const counts = {};
+    let total = 0;
+    const hideUnknown = !!this.state.hideUnknown;
+    rows.forEach((r) => {
+      let v = question.get(r);
+      if (question.skipBlank && (!v || v === "")) return;
+      if (!v || v === "ไม่ทราบ") {
+        if (hideUnknown) return;
+        v = "ไม่ทราบ";
+      }
+      counts[v] = (counts[v] || 0) + 1;
+      total += 1;
+    });
+    let labels = question.order ? question.order.filter((l) => counts[l] != null) : Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+    Object.keys(counts).forEach((k) => { if (!labels.includes(k)) labels.push(k); });
+    return labels.map((label) => ({ label, count: counts[label], pct: total > 0 ? (counts[label] / total * 100) : 0 }));
+  }
+
+  buildLiveSection(question, dimLabel, columns, breakdownQ) {
+    let clusters, rowsByLabel = {};
+    const clusterCounts = {};
+    if (!breakdownQ) {
+      const displayColumns = columns.map((c) => ({ label: c.label, rows: c.rows }));
+      if (displayColumns.length > 1) {
+        const allRows = Array.from(new Set(displayColumns.flatMap((c) => c.rows)));
+        displayColumns.push({ label: "รวม", rows: allRows });
+      }
+      clusters = displayColumns.map((c) => c.label);
+      displayColumns.forEach((col) => { clusterCounts[col.label] = col.rows.length; });
+      displayColumns.forEach((col) => {
+        const dist = this.computeDistribution(col.rows, question);
+        dist.forEach(({ label, count, pct }) => {
+          rowsByLabel[label] = rowsByLabel[label] || {};
+          rowsByLabel[label][col.label] = pct.toFixed(1) + "% (" + count + ")";
+        });
+      });
+    } else {
+      const population = columns.reduce((acc, c) => acc.concat(c.rows), []);
+      const uniquePop = Array.from(new Set(population));
+      const bdDist = this.computeDistribution(uniquePop, breakdownQ);
+      const bdColumns = bdDist.map(({ label }) => {
+        const rows = uniquePop.filter((r) => (breakdownQ.get(r) || "ไม่ทราบ") === label);
+        return { label, rows };
+      });
+      const isTableView = this.state.chartType === "table";
+      if (isTableView) {
+        const questionDist = this.computeDistribution(uniquePop, question);
+        const questionLabels = questionDist.map((d) => d.label);
+        clusters = [...questionLabels, "รวม"];
+        bdColumns.forEach((col) => { clusterCounts[col.label] = col.rows.length; });
+        bdColumns.forEach((bdCol) => {
+          const dist = this.computeDistribution(bdCol.rows, question);
+          const rowTotal = bdCol.rows.length;
+          rowsByLabel[bdCol.label] = rowsByLabel[bdCol.label] || {};
+          dist.forEach(({ label, count, pct }) => {
+            rowsByLabel[bdCol.label][label] = pct.toFixed(1) + "% (" + count + ")";
+          });
+          rowsByLabel[bdCol.label]["รวม"] = "100.0% (" + rowTotal + ")";
+        });
+        const totalDist = this.computeDistribution(uniquePop, question);
+        rowsByLabel["รวม"] = rowsByLabel["รวม"] || {};
+        totalDist.forEach(({ label, count, pct }) => {
+          rowsByLabel["รวม"][label] = pct.toFixed(1) + "% (" + count + ")";
+        });
+        rowsByLabel["รวม"]["รวม"] = "100.0% (" + uniquePop.length + ")";
+        clusterCounts["รวม"] = uniquePop.length;
+      } else {
+        bdColumns.push({ label: "รวม", rows: uniquePop });
+        clusters = bdColumns.map((c) => c.label);
+        bdColumns.forEach((col) => { clusterCounts[col.label] = col.rows.length; });
+        const breakdownGroupLabels = bdColumns.filter((c) => c.label !== "รวม").map((c) => c.label);
+        const countsByLabel = {};
+        bdColumns.forEach((col) => {
+          const dist = this.computeDistribution(col.rows, question);
+          dist.forEach(({ label, count, pct }) => {
+            countsByLabel[label] = countsByLabel[label] || {};
+            countsByLabel[label][col.label] = { count, pct };
+          });
+        });
+        Object.keys(countsByLabel).forEach((label) => {
+          const cells = countsByLabel[label];
+          const rowTotal = breakdownGroupLabels.reduce((sum, c) => sum + (cells[c] ? cells[c].count : 0), 0);
+          rowsByLabel[label] = rowsByLabel[label] || {};
+          breakdownGroupLabels.forEach((c) => {
+            if (!cells[c]) return;
+            const pct = rowTotal > 0 ? (cells[c].count / rowTotal) * 100 : 0;
+            rowsByLabel[label][c] = pct.toFixed(1) + "% (" + cells[c].count + ")";
+          });
+          if (cells["รวม"]) {
+            rowsByLabel[label]["รวม"] = cells["รวม"].pct.toFixed(1) + "% (" + cells["รวม"].count + ")";
+          }
+        });
+      }
+    }
+    const isTableView2 = this.state.chartType === "table";
+    const rowOrder = (breakdownQ && isTableView2) ? [...Object.keys(rowsByLabel).filter((l) => l !== "รวม"), "รวม"] : Object.keys(rowsByLabel);
+    const rows = rowOrder.map((label) => ({ label, values: rowsByLabel[label] }));
+    const qLabel = this.qEn(question.key, question.label);
+    const bdLabel = breakdownQ ? (breakdownQ.labelDisplay || breakdownQ.label) : null;
+    const section = {
+      title: breakdownQ ? qLabel + " - " + bdLabel : qLabel,
+      dimLabel,
+      total: breakdownQ ? (isTableView2 ? this.t("breakdownByPrefixRow") + bdLabel + this.t("breakdownRowNote") : this.t("breakdownByPrefixRow") + bdLabel + this.t("breakdownColNote")) : "",
+      crossTab: !!breakdownQ,
+      rows,
+    };
+    return this.buildSectionView(section, clusters, this.state.chartType, question.labelColors, clusterCounts);
+  }
+
+  renderVals() {
+    const s = this.state;
+    const dataLoaded = !!s.surveyRows && !!s.patumwanStats;
+
+    const chipStyle = (active) => ({
+      padding: "7px 13px", borderRadius: "999px", fontSize: "12px", fontWeight: 500,
+      border: "1px solid " + (active ? "#C43D82" : "hsl(200 15% 88%)"),
+      background: active ? "#C43D82" : "hsl(200 20% 96%)",
+      color: active ? "#fff" : "hsl(200 25% 20%)",
+      cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "6px",
+      boxShadow: active ? "0 2px 6px hsla(174,60%,40%,0.3)" : "none",
+    });
+    const styleStr = (o) => Object.entries(o).map(([k, v]) => k.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase()) + ":" + v).join(";");
+
+    const tabBtnStyle = (active) => styleStr({
+      padding: "8px 16px", borderRadius: "8px", fontSize: "13px", fontWeight: 600,
+      border: "none", cursor: "pointer", whiteSpace: "nowrap",
+      background: active ? "#C43D82" : "transparent",
+      color: active ? "#fff" : "hsl(200 25% 30%)",
+    });
+
+    let statCards = [];
+
+    const districtStats = this.getDistrictStats(s.district);
+    const { clustersKey, subsKey } = this.getFilterKeys(s.district);
+    const selectedClusters = s[clustersKey] || [];
+    const selectedSubs = s[subsKey] || {};
+
+    let dimensionTabs = [];
+    let allTab = null;
+    let vulnerabilityTab = null;
+    let sectionToggles = [];
+    let showSectionPicker = false;
+    let communityGroups = [];
+    let subCommunityPickers = [];
+    let breakdownOptions = [];
+    let noneBreakdownOption = null;
+    let breakdownGroups = [];
+    let showBreakdownSection = false;
+    let showStatResults = false;
+    let sectionViews = [];
+    let currentN = 0;
+    let currentPct = "0.0";
+    let mapDimensionTabs = [];
+    let mapAllTab = null;
+    let mapVulnerabilityTab = null;
+    let mapSectionToggles = [];
+    let mapValuePickers = [];
+
+    let overviewSexStats = [];
+    let overviewAgeStats = [];
+    let overviewCards = [];
+    let overviewTotalN = 0;
+    if (dataLoaded) {
+      const allRows = s.district === "all" ? s.surveyRows : s.surveyRows.filter((r) => r.district === s.district);
+      overviewTotalN = allRows.length;
+      const findQ = (key) => (s.questions || []).find((q) => q.key === key);
+      const sexQ = findQ("sex"), ageQ = findQ("ageGroup");
+      if (sexQ) overviewSexStats = this.buildOverviewSexStats(this.computeDistribution(allRows, sexQ));
+      if (ageQ) overviewAgeStats = this.buildOverviewAgeStats(this.computeDistribution(allRows, ageQ));
+      const overviewCardDefs = [
+        { key: "adlGroup", dimLabel: "สุขภาพ", title: "ผู้มีภาวะพึ่งพิง (ADL)" },
+        { key: "incomeSufficient", dimLabel: "เศรษฐกิจ", title: "ความเพียงพอของรายได้" },
+        { key: "familyVulnerableGroup", dimLabel: "สังคม", title: "ความเปราะบางทางครอบครัว" },
+        { key: "smartphone", dimLabel: "เทคโนโลยี", title: "การใช้สมาร์ทโฟน" },
+        { key: "everFallen", dimLabel: "สิ่งแวดล้อม", title: "ประวัติการหกล้ม (1 ปีที่ผ่านมา)" },
+      ];
+      overviewCards = overviewCardDefs.map((c) => {
+        const q = findQ(c.key);
+        if (!q) return null;
+        const title = c.key === "familyVulnerableGroup" ? this.t("ovFamilyVuln") : this.qEn(c.key, c.title);
+        return { title, dimLabel: this.dimShort(c.dimLabel), pie: this.buildOverviewDonut(this.computeDistribution(allRows, q), 138) };
+      }).filter(Boolean);
+    }
+
+    if (dataLoaded) {
+      const districtRows = this.getDistrictRows(s);
+
+      const rawSelectedDims = s.selectedDimensions || [];
+      const rawSelectedSections = s.selectedSectionKeys || [];
+      const dimsWithSelectedSection = Array.from(new Set(rawSelectedSections.map((k) => k.split("::")[0])));
+      const hasRealDimSelection = rawSelectedDims.some((k) => k !== "__none__");
+      const selectedDims = hasRealDimSelection ? ALL_DIM_KEYS.filter((k) => rawSelectedDims.includes(k) || dimsWithSelectedSection.includes(k)) : ALL_DIM_KEYS;
+      showSectionPicker = hasRealDimSelection || rawSelectedSections.length > 0;
+      showStatResults = hasRealDimSelection || rawSelectedSections.length > 0;
+      allTab = {
+        key: "__all__", label: this.t("allDims"), icon: "🗂️",
+        onClick: () => this.setState(rawSelectedDims.length === ALL_DIM_KEYS.length
+          ? { selectedDimensions: ["__none__"], selectedSectionKeys: [] }
+          : { selectedDimensions: ALL_DIM_KEYS.slice() }),
+        style: styleStr({
+          padding: "8px 14px", borderRadius: "8px", fontSize: "12px", fontWeight: 600, cursor: "pointer",
+          border: "1px solid " + (rawSelectedDims.length === ALL_DIM_KEYS.length ? "#C43D82" : "hsl(200 15% 88%)"),
+          background: rawSelectedDims.length === ALL_DIM_KEYS.length ? "#C43D82" : "#fff",
+          color: rawSelectedDims.length === ALL_DIM_KEYS.length ? "#fff" : "hsl(200 25% 25%)",
+        }),
+      };
+      const buildDimTab = (d) => {
+        const hasSelectedSection = rawSelectedSections.some((k) => k.startsWith(d.key + "::"));
+        const active = rawSelectedDims.includes(d.key) || hasSelectedSection;
+        return {
+          key: d.key, label: this.dimEn(d.key, d.label), icon: d.icon,
+          onClick: () => {
+            const cur = s.selectedDimensions;
+            const next = cur.includes(d.key) ? cur.filter((x) => x !== d.key) : [...cur, d.key];
+            this.setState({ selectedDimensions: next });
+          },
+          style: styleStr({
+            padding: "8px 14px", borderRadius: "8px", fontSize: "12px", fontWeight: 600, cursor: "pointer",
+            border: "1px solid " + (active ? "#C43D82" : "hsl(200 15% 88%)"),
+            background: active ? "#C43D82" : "#fff",
+            color: active ? "#fff" : "hsl(200 25% 25%)",
+          }),
+        };
+      };
+      vulnerabilityTab = buildDimTab(DIMENSIONS.find((d) => d.key === "vulnerability"));
+      dimensionTabs = DIMENSIONS.filter((d) => d.key !== "vulnerability").map(buildDimTab);
+
+      const toggleCluster = (c) => {
+        const cur = s[clustersKey];
+        const next = cur.includes(c) ? cur.filter((x) => x !== c) : [...cur, c];
+        this.setState({ [clustersKey]: next });
+      };
+      const toggleSub = (cluster, name) => {
+        const cur = s[subsKey][cluster] || [];
+        const next = cur.includes(name) ? cur.filter((x) => x !== name) : [...cur, name];
+        this.setState({ [subsKey]: { ...s[subsKey], [cluster]: next } });
+      };
+
+      communityGroups = districtStats.communities.map((g, gi) => {
+        const color = CHART_COLORS[gi % CHART_COLORS.length];
+        const active = selectedClusters.includes(g.cluster);
+        return {
+          cluster: g.cluster, names: g.names,
+          onClick: () => toggleCluster(g.cluster),
+          headerStyle: "display:flex; align-items:center; font-size:11px; font-weight:600; margin-bottom:4px; text-align:left; color:" + (active ? "#fff" : "hsl(200 25% 30%)") + ";",
+          cardStyle: styleStr({
+            border: "1px solid " + (active ? color : "hsl(200 15% 88%)"),
+            borderRadius: "10px", padding: "8px 10px", cursor: "pointer", maxWidth: "260px",
+            background: active ? color : "hsl(200 20% 97%)",
+            textAlign: "left",
+            display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start",
+          }),
+          dotStyle: "width:8px; height:8px; border-radius:999px; display:inline-block; margin-right:6px; background:" + (active ? "#fff" : color) + ";",
+          chipStyle: "font-size:10px; padding:2px 7px; border-radius:999px; background:" + (active ? "hsl(0 0% 100% / .22)" : "hsl(200 20% 92%)") + "; color:" + (active ? "#fff" : "hsl(200 25% 25%)") + ";",
+        };
+      });
+
+      subCommunityPickers = districtStats.communities
+        .filter((g) => selectedClusters.includes(g.cluster))
+        .map((g) => {
+          const subsActive = selectedSubs[g.cluster] || [];
+          return {
+            cluster: g.cluster,
+            chips: g.names.map((nm) => {
+              const active = subsActive.includes(nm);
+              return {
+                name: nm,
+                onClick: () => toggleSub(g.cluster, nm),
+                style: styleStr({
+                  padding: "6px 12px", borderRadius: "999px", fontSize: "11px", fontWeight: 500, cursor: "pointer",
+                  border: "1px solid " + (active ? "#C43D82" : "hsl(200 15% 88%)"),
+                  background: active ? "hsl(329 53% 62% / .12)" : "#fff",
+                  color: active ? "hsl(329 53% 38%)" : "hsl(200 10% 45%)",
+                }),
+              };
+            }),
+          };
+        });
+
+      // build population columns
+      let columns;
+      if (selectedClusters.length === 0) {
+        columns = [{ label: s.district === "all" ? "รวมทุกเขต" : "รวมทั้ง" + (s.district === "patumwan" ? "เขตปทุมวัน" : "เขตประเวศ"), rows: districtRows }];
+      } else {
+        columns = selectedClusters.map((c) => {
+          const subs = selectedSubs[c] || [];
+          const rows = districtRows.filter((r) => r.clusterGroup === c && (subs.length === 0 || subs.includes(r.community)));
+          const label = subs.length ? c + " (" + subs.length + " ชุมชนย่อย)" : c;
+          return { label, rows };
+        });
+        if (selectedClusters.length >= 2) {
+          const rows = districtRows.filter((r) => {
+            if (!selectedClusters.includes(r.clusterGroup)) return false;
+            const subs = selectedSubs[r.clusterGroup] || [];
+            return subs.length === 0 || subs.includes(r.community);
+          });
+          columns.push({ label: "รวมกลุ่มที่เลือก", rows });
+        }
+      }
+      const questionsAll = s.questions || [];
+      const rawMapDims = s.mapSelectedDimensions || [];
+      const rawMapSections = s.mapSelectedSectionKeys || [];
+      const activeMapDims = MAP_DIMENSIONS.filter((k) => rawMapDims.includes(k));
+      const allDimsSelected = rawMapDims.length === MAP_DIMENSIONS.length;
+      mapAllTab = {
+        key: "__all__", label: this.t("allDims"), icon: "🗂️",
+        onClick: () => this.setState(allDimsSelected ? { mapSelectedDimensions: [], mapSelectedSectionKeys: [], mapSelectedValues: {} } : { mapSelectedDimensions: MAP_DIMENSIONS.slice() }),
+        style: styleStr({
+          padding: "8px 14px", borderRadius: "8px", fontSize: "12px", fontWeight: 600, cursor: "pointer",
+          border: "1px solid " + (allDimsSelected ? "#C43D82" : "hsl(200 15% 88%)"),
+          background: allDimsSelected ? "#C43D82" : "#fff",
+          color: allDimsSelected ? "#fff" : "hsl(200 25% 25%)",
+        }),
+      };
+      const buildMapDimTab = (key) => {
+        const dimObj = DIMENSIONS.find((d) => d.key === key) || {};
+        const label = this.dimEn(key, dimObj.label || key);
+        const icon = dimObj.icon || "";
+        const active = rawMapDims.includes(key);
+        return {
+          key, label, icon,
+          onClick: () => {
+            const cur = s.mapSelectedDimensions;
+            const next = cur.includes(key) ? cur.filter((x) => x !== key) : [...cur, key];
+            if (cur.includes(key)) {
+              const remainingSections = s.mapSelectedSectionKeys.filter((k) => !k.startsWith(key + "::"));
+              const remainingValues = { ...s.mapSelectedValues };
+              Object.keys(remainingValues).forEach((k) => { if (k.startsWith(key + "::")) delete remainingValues[k]; });
+              this.setState({ mapSelectedDimensions: next, mapSelectedSectionKeys: remainingSections, mapSelectedValues: remainingValues });
+            } else {
+              this.setState({ mapSelectedDimensions: next });
+            }
+          },
+          style: styleStr({
+            padding: "8px 14px", borderRadius: "8px", fontSize: "12px", fontWeight: 600, cursor: "pointer",
+            border: "1px solid " + (active ? "#C43D82" : "hsl(200 15% 88%)"),
+            background: active ? "#C43D82" : "#fff",
+            color: active ? "#fff" : "hsl(200 25% 25%)",
+          }),
+        };
+      };
+      mapVulnerabilityTab = buildMapDimTab("vulnerability");
+      mapDimensionTabs = MAP_DIMENSIONS.filter((key) => key !== "vulnerability").map(buildMapDimTab);
+      const toggleMapSection = (optKey) => {
+        const cur = s.mapSelectedSectionKeys;
+        const next = cur.includes(optKey) ? cur.filter((x) => x !== optKey) : [...cur, optKey];
+        this.setState({ mapSelectedSectionKeys: next });
+      };
+      mapSectionToggles = activeMapDims.map((dimKey) => {
+        const label = this.dimEn(dimKey, (DIMENSIONS.find((d) => d.key === dimKey) || {}).label || dimKey);
+        if (dimKey === "vulnerability") {
+          const q = questionsAll.find((qq) => qq.dimension === "vulnerability" && qq.key === "vulnerabilityLevel");
+          const optKey = "vulnerability::vulnerabilityLevel";
+          const chosen = s.mapSelectedValues[optKey] || [];
+          return {
+            dimKey, dimLabel: label,
+            toggles: (q ? q.order : []).map((level) => {
+              const active = chosen.includes(level);
+              return {
+                key: optKey + "::" + level, label: this.tv(level), hasInlineVp: false,
+                onClick: () => {
+                  const nextVals = active ? chosen.filter((x) => x !== level) : [...chosen, level];
+                  const sections = s.mapSelectedSectionKeys.includes(optKey) ? s.mapSelectedSectionKeys : [...s.mapSelectedSectionKeys, optKey];
+                  this.setState({ mapSelectedValues: { ...s.mapSelectedValues, [optKey]: nextVals }, mapSelectedSectionKeys: sections });
+                },
+                style: styleStr({
+                  padding: "6px 12px", borderRadius: "999px", fontSize: "11px", fontWeight: 500, cursor: "pointer",
+                  border: "1px solid " + (active ? "hsl(8 50% 54%)" : "hsl(200 15% 88%)"),
+                  background: active ? "hsl(8 50% 54% / .12)" : "hsl(200 20% 96%)",
+                  color: active ? "hsl(8 50% 40%)" : "hsl(200 10% 45%)",
+                }),
+              };
+            }),
+          };
+        }
+        const qs = questionsAll.filter((q) => q.dimension === dimKey && !q.hidden);
+        return {
+          dimKey, dimLabel: label,
+          toggles: qs.map((q) => {
+            const optKey = dimKey + "::" + q.key;
+            const active = rawMapSections.includes(optKey);
+            const isRisk = !!q.riskValue;
+            return {
+              key: optKey, label: this.qEn(q.key, q.label) + (isRisk ? " ⚠️" : ""), onClick: () => toggleMapSection(optKey), hasInlineVp: false,
+              style: styleStr({
+                padding: "6px 12px", borderRadius: "999px", fontSize: "11px", fontWeight: 500, cursor: "pointer",
+                border: "1px solid " + (active ? (isRisk ? "hsl(8 50% 54%)" : "#C43D82") : "hsl(200 15% 88%)"),
+                background: active ? (isRisk ? "hsl(8 50% 54% / .12)" : "hsl(329 53% 62% / .1)") : "hsl(200 20% 96%)",
+                color: active ? (isRisk ? "hsl(8 50% 40%)" : "hsl(329 53% 38%)") : "hsl(200 10% 45%)",
+              }),
+            };
+          }),
+        };
+      });
+
+      const toggleMapValue = (optKey, val) => {
+        const cur = s.mapSelectedValues[optKey] || [];
+        const next = cur.includes(val) ? cur.filter((x) => x !== val) : [...cur, val];
+        this.setState({ mapSelectedValues: { ...s.mapSelectedValues, [optKey]: next } });
+      };
+      mapValuePickers = rawMapSections.filter((k) => k !== "digital::digitalSkillGap" && k !== "environment::fallRiskGroup" && k !== "vulnerability::vulnerabilityLevel").flatMap((optKey) => {
+        const q = questionsAll.find((qq) => qq.dimension + "::" + qq.key === optKey);
+        if (!q) return [];
+        const dist = this.computeDistribution(districtRows, q);
+        const chosen = (s.mapSelectedValues[optKey] || []);
+        const distOptions = dist.map((d) => {
+          const active = chosen.includes(d.label);
+          const isRiskVal = q.riskValue && d.label === q.riskValue;
+          return {
+            label: this.tv(d.label) + " (" + d.count + ")",
+            onClick: () => toggleMapValue(optKey, d.label),
+            style: styleStr({
+              padding: "6px 12px", borderRadius: "999px", fontSize: "11px", fontWeight: 500, cursor: "pointer",
+              border: "1px solid " + (active ? (isRiskVal ? "hsl(8 50% 54%)" : "#C43D82") : "hsl(200 15% 88%)"),
+              background: active ? (isRiskVal ? "hsl(8 50% 54% / .12)" : "hsl(329 53% 62% / .1)") : "hsl(200 20% 96%)",
+              color: active ? (isRiskVal ? "hsl(8 50% 40%)" : "hsl(329 53% 38%)") : "hsl(200 10% 45%)",
+            }),
+          };
+        });
+        if (optKey === "digital::techAccessGroup") {
+          const groupCountLabel = " (" + districtRows.filter((r) => r.techAccessGroup === "ไม่ใช้").length + ")";
+          return [{ key: optKey, groupCountLabel, options: [], groups: [{ label: this.t("smartphoneUse"), options: distOptions }] }];
+        }
+        return [{ key: optKey, label: this.qEn(q.key, q.label), options: distOptions }];
+      }).filter(Boolean);
+
+      const inlineableKeys = new Set();
+      mapSectionToggles.forEach((grp) => grp.toggles.forEach((st) => inlineableKeys.add(st.key)));
+      mapValuePickers.forEach((vp) => {
+        if (inlineableKeys.has(vp.key)) {
+          mapSectionToggles.forEach((grp) => grp.toggles.forEach((st) => {
+            if (st.key === vp.key) {
+              st.inlineVp = vp; st.hasInlineVp = true;
+              if (vp.groupCountLabel) st.label = st.label + vp.groupCountLabel;
+            }
+          }));
+        }
+      });
+      mapValuePickers = mapValuePickers.filter((vp) => !inlineableKeys.has(vp.key));
+
+      const deviceDrillKey = "health::needsAssistiveDevice";
+      if (rawMapSections.includes(deviceDrillKey) && (s.mapSelectedValues[deviceDrillKey] || []).includes("ต้องการ")) {
+        const drillPop = districtRows.filter((r) => r.needsAssistiveDevice === "ต้องการ");
+        const deviceFields = [
+          { field: "needsGlasses", label: "แว่นตา" },
+          { field: "needsDentures", label: "ฟันปลอม" },
+          { field: "needsCane", label: "ไม้เท้า" },
+          { field: "needsHearingAid", label: "เครื่องช่วยฟัง" },
+        ];
+        const deviceOptKey = "health::deviceType";
+        const chosenDevices = s.mapSelectedValues[deviceOptKey] || [];
+        const deviceGroup = {
+          label: this.t("devicesWanted"),
+          options: deviceFields.map(({ field, label }) => {
+            const count = drillPop.filter((r) => r[field] === "ใช่").length;
+            const active = chosenDevices.includes(field);
+            return {
+              label: this.tv(label) + " (" + count + ")",
+              onClick: () => toggleMapValue(deviceOptKey, field),
+              style: styleStr({
+                padding: "6px 12px", borderRadius: "999px", fontSize: "11px", fontWeight: 500, cursor: "pointer",
+                border: "1px solid " + (active ? "#C43D82" : "hsl(200 15% 88%)"),
+                background: active ? "hsl(329 53% 62% / .1)" : "hsl(200 20% 96%)",
+                color: active ? "hsl(329 53% 38%)" : "hsl(200 10% 45%)",
+              }),
+            };
+          }),
+        };
+        mapSectionToggles.forEach((grp) => grp.toggles.forEach((st) => {
+          if (st.key === deviceDrillKey && st.inlineVp) st.inlineVp.groups.push(deviceGroup);
+        }));
+      }
+
+      const skillGapDrillKey = "digital::digitalSkillGap";
+      if (rawMapSections.includes(skillGapDrillKey)) {
+        const skillGapCount = districtRows.filter((r) => r.lineUseGroup != null && r.facebookUseGroup != null && (r.lineUseGroup === "ไม่ใช้" || r.facebookUseGroup === "ไม่ใช้")).length;
+        const skillGapVp = { key: skillGapDrillKey, options: [], groups: [] };
+        const addSkillGroup = (optKey, field, groupLabel) => {
+          const chosen = s.mapSelectedValues[optKey] || [];
+          skillGapVp.groups.push({
+            label: groupLabel,
+            options: ["ใช้", "ไม่ใช้"].map((val) => {
+              const count = districtRows.filter((r) => r[field] === val).length;
+              const active = chosen.includes(val);
+              return {
+                label: this.tv(val) + " (" + count + ")",
+                onClick: () => toggleMapValue(optKey, val),
+                style: styleStr({
+                  padding: "6px 12px", borderRadius: "999px", fontSize: "11px", fontWeight: 500, cursor: "pointer",
+                  border: "1px solid " + (active ? "#C43D82" : "hsl(200 15% 88%)"),
+                  background: active ? "hsl(329 53% 62% / .1)" : "hsl(200 20% 96%)",
+                  color: active ? "hsl(329 53% 38%)" : "hsl(200 10% 45%)",
+                }),
+              };
+            }),
+          });
+        };
+        addSkillGroup("digital::lineUseGroup", "lineUseGroup", this.t("lineUse"));
+        addSkillGroup("digital::facebookUseGroup", "facebookUseGroup", this.t("facebookUse"));
+        mapSectionToggles.forEach((grp) => grp.toggles.forEach((st) => {
+          if (st.key === skillGapDrillKey) { st.inlineVp = skillGapVp; st.hasInlineVp = true; st.label = st.label + " (" + skillGapCount + ")"; }
+        }));
+      }
+
+      const fallRiskDrillKey = "environment::fallRiskGroup";
+      if (rawMapSections.includes(fallRiskDrillKey)) {
+        const fallRiskCount = districtRows.filter((r) => r.everFallen === "เคย" || r.homeHasRisk === "มี").length;
+        const fallCatVp = { key: "environment::fallRiskGroup", options: [], groups: [] };
+        const addFallGroup = (optKey, field, options, groupLabel) => {
+          const chosen = s.mapSelectedValues[optKey] || [];
+          fallCatVp.groups.push({
+            label: groupLabel,
+            options: options.map((val) => {
+              const count = districtRows.filter((r) => r[field] === val).length;
+              const active = chosen.includes(val);
+              return {
+                label: this.tv(val) + " (" + count + ")",
+                onClick: () => toggleMapValue(optKey, val),
+                style: styleStr({
+                  padding: "6px 12px", borderRadius: "999px", fontSize: "11px", fontWeight: 500, cursor: "pointer",
+                  border: "1px solid " + (active ? "#C43D82" : "hsl(200 15% 88%)"),
+                  background: active ? "hsl(329 53% 62% / .1)" : "hsl(200 20% 96%)",
+                  color: active ? "hsl(329 53% 38%)" : "hsl(200 10% 45%)",
+                }),
+              };
+            }),
+          });
+        };
+        addFallGroup("environment::everFallen", "everFallen", ["เคย", "ไม่เคย"], this.t("fallHistory"));
+        addFallGroup("environment::homeHasRisk", "homeHasRisk", ["มี", "ไม่มี"], this.t("homeRisk"));
+        mapSectionToggles.forEach((grp) => grp.toggles.forEach((st) => {
+          if (st.key === "environment::fallRiskGroup") { st.inlineVp = fallCatVp; st.hasInlineVp = true; st.label = st.label + " (" + fallRiskCount + ")"; }
+        }));
+      }
+
+      mapSectionToggles.forEach((grp) => grp.toggles.forEach((st) => {
+        if (st.hasInlineVp && st.inlineVp) {
+          if (st.inlineVp.hasTopOptions === undefined) st.inlineVp.hasTopOptions = (st.inlineVp.options || []).length > 0;
+          if (!st.inlineVp.groups) st.inlineVp.groups = [];
+        }
+      }));
+
+      const filteredRows = this.getFilteredRows();
+      currentN = filteredRows.length;
+      currentPct = districtRows.length > 0 ? (currentN / districtRows.length * 100).toFixed(1) : "0.0";
+      const totalP = filteredRows.length || 1;
+      const avgAge = Math.round(filteredRows.reduce((sum, r) => sum + (r.age || 0), 0) / totalP);
+      const uniqueHouses = new Set(filteredRows.map((r) => r.lat.toFixed(6) + "," + r.lng.toFixed(6))).size;
+      const communitiesCount = new Set(filteredRows.map((r) => r.community)).size;
+      statCards = [
+        { label: this.t("cardShown"), value: filteredRows.length.toLocaleString() + " (" + currentPct + "%)", icon: "👥", iconWrapStyle: "width:44px;height:44px;border-radius:10px;background:hsl(329 53% 62% / .12);color:hsl(329 53% 38%);display:flex;align-items:center;justify-content:center;font-size:20px;" },
+        { label: this.t("cardHouses"), value: uniqueHouses.toLocaleString(), icon: "🏠", iconWrapStyle: "width:44px;height:44px;border-radius:10px;background:hsl(350 50% 55% / .12);color:hsl(350 50% 38%);display:flex;align-items:center;justify-content:center;font-size:20px;" },
+        { label: this.t("cardCommunities"), value: String(communitiesCount), icon: "📍", iconWrapStyle: "width:44px;height:44px;border-radius:10px;background:hsl(300 15% 55% / .12);color:hsl(300 15% 35%);display:flex;align-items:center;justify-content:center;font-size:20px;" },
+        { label: this.t("cardAvgAge"), value: avgAge + " " + this.t("years"), icon: "❤️", iconWrapStyle: "width:44px;height:44px;border-radius:10px;background:hsl(325 60% 55% / .12);color:hsl(325 60% 35%);display:flex;align-items:center;justify-content:center;font-size:20px;" },
+      ];
+
+      showBreakdownSection = rawSelectedSections.length > 0;
+      const breakdownQs = (s.breakdownQuestions || []).filter((q) => !rawSelectedSections.includes(q.dimension + "::" + q.key));
+      const chipStyle = (active) => styleStr({
+        padding: "7px 13px", borderRadius: "999px", fontSize: "12px", fontWeight: 500, cursor: "pointer",
+        border: "1px solid " + (active ? "#C43D82" : "hsl(200 15% 88%)"),
+        background: active ? "#C43D82" : "hsl(200 20% 96%)",
+        color: active ? "#fff" : "hsl(200 25% 20%)",
+        boxShadow: active ? "0 2px 6px hsla(174,60%,40%,0.3)" : "none",
+      });
+      const breakdownByArr = s.breakdownBy || [];
+      const toggleBreakdown = (key) => {
+        const next = breakdownByArr.includes(key) ? [] : [key];
+        this.setState({ breakdownBy: next });
+      };
+      noneBreakdownOption = {
+        key: null, label: this.t("noBreakdown"),
+        onClick: () => this.setState({ breakdownBy: [] }),
+        style: chipStyle(breakdownByArr.length === 0),
+      };
+      const breakdownGroupOrder = [];
+      const breakdownGroupMap = {};
+      breakdownQs.forEach((q) => {
+        const dl = this.dimEn(q.dimension, (DIMENSIONS.find((d) => d.key === q.dimension) || {}).label || q.dimension);
+        if (!breakdownGroupMap[dl]) { breakdownGroupMap[dl] = []; breakdownGroupOrder.push(dl); }
+        breakdownGroupMap[dl].push({
+          key: q.key, label: this.qEn(q.key, q.label),
+          onClick: () => toggleBreakdown(q.key),
+          style: chipStyle(breakdownByArr.includes(q.key)),
+        });
+      });
+      breakdownGroups = breakdownGroupOrder.map((dl) => ({ dimLabel: dl, options: breakdownGroupMap[dl] }));
+      const selectedBreakdownQs = breakdownQs.filter((q) => breakdownByArr.includes(q.key));
+      const breakdownQ = selectedBreakdownQs.length === 0 ? null : {
+        label: selectedBreakdownQs.map((q) => q.label).join(" × "),
+        labelDisplay: selectedBreakdownQs.map((q) => this.qEn(q.key, q.label)).join(" × "),
+        get: (r) => selectedBreakdownQs.map((q) => q.get(r) || "ไม่ทราบ").join(" / "),
+      };
+
+      const questions = s.questions || [];
+      const dimLabelOf = (key) => this.dimEn(key, (DIMENSIONS.find((d) => d.key === key) || {}).label || key);
+      const toggleSection = (optKey) => {
+        const cur = s.selectedSectionKeys;
+        const next = cur.includes(optKey) ? cur.filter((x) => x !== optKey) : [...cur, optKey];
+        this.setState({ selectedSectionKeys: next });
+      };
+      const sectionStyle = (active) => styleStr({
+        padding: "6px 12px", borderRadius: "999px", fontSize: "11px", fontWeight: 500, cursor: "pointer",
+        border: "1px solid " + (active ? "#C43D82" : "hsl(200 15% 88%)"),
+        background: active ? "hsl(329 53% 62% / .1)" : "hsl(200 20% 96%)",
+        color: active ? "hsl(329 53% 38%)" : "hsl(200 10% 45%)",
+      });
+
+      sectionToggles = ALL_DIM_KEYS.filter((k) => k !== "kr" && (rawSelectedDims.includes(k) || dimsWithSelectedSection.includes(k)))
+        .map((dimKey) => {
+          const qs = questions.filter((q) => q.dimension === dimKey && !q.hidden);
+          return {
+            dimKey, dimLabel: dimLabelOf(dimKey),
+            toggles: qs.map((q) => {
+              const optKey = dimKey + "::" + q.key;
+              const active = rawSelectedSections.includes(optKey);
+              return { key: optKey, label: this.qEn(q.key, q.label), onClick: () => toggleSection(optKey), style: sectionStyle(active) };
+            }),
+          };
+        });
+      if (selectedDims.includes("kr")) {
+        sectionToggles.push({
+          dimKey: "kr", dimLabel: dimLabelOf("kr"),
+          toggles: (districtStats.kr || []).map((sec) => {
+            const optKey = "kr::" + sec.title;
+            const active = rawSelectedSections.includes(optKey);
+            return { key: optKey, label: sec.title, onClick: () => toggleSection(optKey), style: sectionStyle(active) };
+          }),
+        });
+      }
+
+      const isSectionVisible = (optKey) => rawSelectedSections.length === 0 || rawSelectedSections.includes(optKey);
+
+      selectedDims.forEach((dimKey) => {
+        if (dimKey === "kr") {
+          (districtStats.kr || []).forEach((sec) => {
+            const optKey = "kr::" + sec.title;
+            if (!isSectionVisible(optKey)) return;
+            const view = this.buildSectionView({ ...sec, dimLabel: dimLabelOf("kr") + " · รายงานต้นฉบับ" }, districtStats.clusters, s.chartType);
+            sectionViews.push(view);
+          });
+          return;
+        }
+        questions.filter((q) => q.dimension === dimKey).forEach((q) => {
+          const optKey = dimKey + "::" + q.key;
+          if (!isSectionVisible(optKey)) return;
+          sectionViews.push(this.buildLiveSection(q, dimLabelOf(dimKey), columns, breakdownQ));
+        });
+      });
+
+      if (this.leafletMap) this.updateMarkers();
+    }
+
+    const districtLabelOf = (d) => this.tv(d === "patumwan" ? "เขตปทุมวัน" : d === "pravet" ? "เขตประเวศ" : "ทุกเขต");
+    const stripPrefix = (label, prefix) => label.startsWith(prefix) ? label.slice(prefix.length) : label;
+    const { clustersKey: printClustersKey, subsKey: printSubsKey } = this.getFilterKeys(s.district);
+    const printSelectedClusters = s[printClustersKey] || [];
+    const printSelectedSubs = s[printSubsKey] || {};
+    const printSubNames = printSelectedClusters.flatMap((c) => printSelectedSubs[c] || []);
+    const printMapKeys = s.mapSelectedSectionKeys || [];
+    const printMapValues = s.mapSelectedValues || {};
+    const printFilterParts = [];
+    if (printSelectedClusters.length > 0) printFilterParts.push(this.t("fsGroup") + printSelectedClusters.map((c) => stripPrefix(c, "กลุ่ม")).join(", "));
+    if (printSubNames.length > 0) printFilterParts.push(this.t("fsCommunity") + printSubNames.join(", "));
+    const deviceFieldLabels = { needsGlasses: "แว่นตา", needsDentures: "ฟันปลอม", needsCane: "ไม้เท้า", needsHearingAid: "เครื่องช่วยฟัง" };
+    const drillGroups = {
+      "environment::fallRiskGroup": { title: this.t("fallRiskGroup"), subKeys: [
+        { key: "environment::everFallen", label: this.t("everFallenLabel") },
+        { key: "environment::homeHasRisk", label: this.t("homeRisk") },
+      ] },
+      "digital::digitalSkillGap": { title: this.t("skillGapGroup"), subKeys: [
+        { key: "digital::lineUseGroup", label: this.t("lineUse") },
+        { key: "digital::facebookUseGroup", label: this.t("facebookUse") },
+      ] },
+      "health::needsAssistiveDevice": { title: null, subKeys: [
+        { key: "health::deviceType", label: this.t("devicesWantedShort"), isDeviceType: true },
+      ] },
+    };
+    const consumedSubKeys = new Set();
+    Object.keys(drillGroups).forEach((groupKey) => {
+      if (!printMapKeys.includes(groupKey)) return;
+      const group = drillGroups[groupKey];
+      const subParts = [];
+      group.subKeys.forEach((sub) => {
+        consumedSubKeys.add(sub.key);
+        const vals = printMapValues[sub.key] || [];
+        if (!vals.length) return;
+        subParts.push(sub.isDeviceType ? this.t("devicesWantedShort") + ": " + vals.map((f) => this.tv(deviceFieldLabels[f] || f)).join(", ") : sub.label + ": " + vals.map((v) => this.tv(v)).join(", "));
+      });
+      if (group.title) {
+        printFilterParts.push(group.title + (subParts.length ? " (" + subParts.join(", ") + ")" : ""));
+      } else {
+        subParts.forEach((p) => printFilterParts.push(p));
+      }
+    });
+    printMapKeys.forEach((k) => {
+      if (drillGroups[k]) return;
+      const q = (s.questions || []).find((qq) => qq.dimension + "::" + qq.key === k);
+      if (!q) return;
+      const chosen = printMapValues[k] || [];
+      const label = k === "digital::techAccessGroup" ? this.t("smartphoneUse") : this.qEn(q.key, q.label);
+      printFilterParts.push(label + (chosen.length ? ": " + chosen.map((v) => this.tv(v)).join(", ") : (q.riskValue ? ": " + this.tv(q.riskValue) : "")));
+    });
+    const printFilterSummary = printFilterParts.length > 0 ? " · " + this.t("filtersUsed") + " " + printFilterParts.join(" · ") : "";
+    const printFilterList = printFilterParts.map((p) => ({ text: p }));
+    const mapFilterParts = [];
+    mapFilterParts.push(this.t("fsDistrict") + stripPrefix(districtLabelOf(s.district), "เขต"));
+    mapFilterParts.push(...printFilterParts);
+    mapFilterParts.push(s.hideUnknown ? this.t("fsHideUnknown") : this.t("fsShowUnknown"));
+    const mapFilterSummary = mapFilterParts.join(" · ");
+    const hasMapFilterSummary = mapFilterParts.length > 0;
+    const printSourceRows = s.isPrinting ? (s.printHouseRecords || (dataLoaded ? this.getFilteredRows() : [])) : [];
+    const printRows = printSourceRows.map((r) => ({
+      id: r.elderId || "-",
+      houseNo: r.houseNo || "-",
+      communityLabel: r.community + " (" + r.clusterGroup + ")",
+      districtLabel: districtLabelOf(r.district),
+      sex: this.tv(r.sex),
+      age: r.age ?? "-",
+      adlGroup: this.tv(r.adlGroup) || "-",
+      hasChronic: this.tv(r.hasChronic) || "-",
+      coords: r.lat.toFixed(6) + ", " + r.lng.toFixed(6),
+      mapUrl: "https://www.google.com/maps?q=" + r.lat + "," + r.lng,
+    }));
+    const searchTrim = (s.searchQuery || "").trim();
+    const dateLocale = (s.lang === "en") ? "en-US" : "th-TH";
+    const dateNow = new Date().toLocaleDateString(dateLocale, { year: "numeric", month: "long", day: "numeric" });
+    const printSubtitle = s.printHouseRecords
+      ? this.t("exportHouseOnly") + " " + (printRows[0] ? printRows[0].houseNo : "-") + " · " + this.t("count") + " " + printRows.length + " " + this.t("ray") + " · " + this.t("reportedOn") + " " + dateNow
+      : (searchTrim
+      ? this.t("searchResultPre") + ' "' + searchTrim + '" · '
+      : "") + districtLabelOf(s.district) + " · " + this.t("count") + " " + printRows.length + " " + this.t("ray") + " · " + this.t("reportedOn") + " " + dateNow;
+
+    this._lastSectionViews = sectionViews;
+    const selectedDimsForPrint = (s.selectedDimensions.length ? s.selectedDimensions : ALL_DIM_KEYS);
+    const statClustersKey = this.getFilterKeys(s.district).clustersKey;
+    const statSelectedClusters = s[statClustersKey] || [];
+    const statSelectedSectionLabels = (s.selectedSectionKeys || []).map((k) => {
+      const q = (s.questions || []).find((qq) => qq.dimension + "::" + qq.key === k);
+      return q ? this.qEn(q.key, q.label) : null;
+    }).filter(Boolean);
+    const statBreakdownLabels = (s.breakdownBy || []).map((k) => { const q = (s.breakdownQuestions || []).find((qq) => qq.key === k); return q ? this.qEn(q.key, q.label) : null; }).filter(Boolean);
+    const statFilterParts = [];
+    statFilterParts.push(this.t("fsDistrict") + stripPrefix(districtLabelOf(s.district), "เขต"));
+    statFilterParts.push(statSelectedClusters.length > 0 ? this.t("fsGroup") + statSelectedClusters.map((c) => stripPrefix(c, "กลุ่ม")).join(", ") : this.t("fsGroup") + this.t("fsAllGroups"));
+    const statSelectedSubs = s[this.getFilterKeys(s.district).subsKey] || {};
+    const statSubNames = statSelectedClusters.flatMap((c) => statSelectedSubs[c] || []);
+    if (statSubNames.length > 0) statFilterParts.push(this.t("fsCommunity") + statSubNames.join(", "));
+    else statFilterParts.push(this.t("fsCommunity") + this.t("fsAllCommunities"));
+    if (s.selectedDimensions.length > 0) statFilterParts.push(this.t("fsDimension") + s.selectedDimensions.map((k) => this.dimEn(k, (DIMENSIONS.find((d) => d.key === k) || {}).label)).filter(Boolean).join(", "));
+    if (statSelectedSectionLabels.length > 0) statFilterParts.push(this.t("fsSubtopic") + statSelectedSectionLabels.join(", "));
+    if (statBreakdownLabels.length > 0) statFilterParts.push(this.t("fsBreakdown") + statBreakdownLabels.join(" × "));
+    statFilterParts.push(s.hideUnknown ? this.t("fsHideUnknown") : this.t("fsShowUnknown"));
+    const statFilterSummary = statFilterParts.join(" · ");
+    const statFilterList = statFilterParts.map((p) => ({ text: p }));
+    this._lastStatFilterSummary = statFilterSummary;
+    const printChartsSubtitle = districtLabelOf(s.district)
+      + " · " + sectionViews.length + " " + this.t("topicUnit")
+      + ((s.breakdownBy || []).length ? " · " + this.t("breakdownBy") + " " + (s.breakdownBy || []).map((k) => { const q = (s.breakdownQuestions || []).find((qq) => qq.key === k); return q ? this.qEn(q.key, q.label) : k; }).join(" × ") : "")
+      + (statFilterSummary ? " · " + statFilterSummary : "")
+      + " · " + this.t("reportedOn") + " " + dateNow;
+    const printChartSections = sectionViews.map((sec) => ({
+      title: sec.title, dimLabel: sec.dimLabel, total: sec.total,
+      isPie: sec.isPie,
+      isBar: sec.isBar,
+      pies: (sec.pies || []).map((pie) => ({
+        cluster: pie.cluster,
+        donutStyle: pie.donutStyle,
+        segs: pie.segs.map((seg) => ({ label: seg.label, display: seg.display, dotStyle: seg.dotStyle, showPieLabel: seg.showPieLabel, pieLabelStyle: seg.pieLabelStyle, isFemale: /หญิง|Female/.test(seg.labelRaw || seg.label), isMale: /^(ชาย|Male)$/.test(seg.labelRaw || seg.label) })),
+      })),
+      rows: (sec.rowsParsed || []).map((row) => ({
+        label: row.label,
+        isFemale: /หญิง|Female/.test(row.labelRaw || row.label),
+        isMale: /^(ชาย|Male)$/.test(row.labelRaw || row.label),
+        cells: (row.cells || []).map((cell) => ({
+          cluster: cell.cluster, display: cell.display,
+          fillStyle: "height:100%; width:" + (cell.pctVal || 0) + "%; background:" + (cell.colorVal || "#999") + "; border-radius:4px;",
+        })),
+      })),
+    }));
+
+    return {
+      dataLoaded,
+      t: this.tObj(),
+      toggleLang: () => this.setState({ lang: s.lang === "en" ? "th" : "en" }),
+      langBtnLabel: this.t("langBtn"),
+      searchQuery: s.searchQuery || "",
+      hasSearchQuery: !!searchTrim,
+      onSearchChange: (e) => this.setState({ searchQuery: e.target.value }),
+      clearSearch: () => this.setState({ searchQuery: "" }),
+      clearMapFilters: () => this.setState({ mapSelectedDimensions: [], mapSelectedSectionKeys: [], mapSelectedValues: {}, searchQuery: "" }),
+      exportPdf: () => {
+        this.setState({ isPrinting: true }, () => {
+          this.initPrintMap();
+          document.body.classList.add("print-mode-house");
+          setTimeout(() => { this.updatePrintMap(); setTimeout(() => { window.print(); document.body.classList.remove("print-mode-house"); this.setState({ isPrinting: false }); }, 500); }, 50);
+        });
+      },
+      printRows,
+      printSubtitle,
+      printFilterList,
+      hasPrintFilterList: printFilterList.length > 0,
+      goDashboard: () => this.setState({ view: "dashboard", district: "all" }),
+      goStatistics: () => this.setState({ view: "statistics", district: "all" }),
+      goOverview: () => this.setState({ view: "overview" }),
+      openManual: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ manualOpen: true }); },
+      manualFile: s.lang === "en" ? "User Manual.dc.html" : "คู่มือการใช้งาน",
+      manualIsEn: s.lang === "en",
+      manualIsTh: s.lang !== "en",
+      closeManual: () => this.setState({ manualOpen: false }),
+      stopProp: (e) => { if (e && e.stopPropagation) e.stopPropagation(); },
+      manualOpen: !!s.manualOpen,
+      tabBtnStyleDashboard: tabBtnStyle(s.view === "dashboard"),
+      tabBtnStyleStatistics: tabBtnStyle(s.view === "statistics"),
+      tabBtnStyleOverview: tabBtnStyle(s.view === "overview"),
+      dashboardWrapperStyle: "display:" + (s.view === "dashboard" ? "block" : "none") + ";",
+      statisticsWrapperStyle: "display:" + (s.view === "statistics" ? "block" : "none") + ";",
+      overviewWrapperStyle: "display:" + (s.view === "overview" ? "block" : "none") + ";",
+      sharedFilterWrapperStyle: "display:" + (s.view === "overview" ? "none" : "block") + ";",
+      overviewSexStats,
+      overviewAgeStats,
+      overviewCards,
+      toggleHideUnknown: () => this.setState({ hideUnknown: !s.hideUnknown }),
+      hideUnknownTrackStyle: styleStr({
+        width: "34px", height: "18px", borderRadius: "999px", position: "relative", transition: "background .15s",
+        background: s.hideUnknown ? "hsl(200 15% 82%)" : "#C43D82",
+      }),
+      hideUnknownKnobStyle: styleStr({
+        position: "absolute", top: "2px", left: s.hideUnknown ? "2px" : "18px", width: "14px", height: "14px",
+        borderRadius: "50%", background: "#fff", transition: "left .15s", boxShadow: "0 1px 2px rgba(0,0,0,.25)",
+      }),
+      overviewTotalN,
+      statCards,
+      mapRef: this.mapContainerRef,
+      printMapRef: this.printMapRef,
+
+      selectPatumwan: () => this.setState({ district: "patumwan" }),
+      selectPravet: () => this.setState({ district: "pravet" }),
+      selectAll: () => this.setState({ district: "all" }),
+      districtTabStylePatumwan: tabBtnStyle(s.district === "patumwan"),
+      districtTabStylePravet: tabBtnStyle(s.district === "pravet"),
+      districtTabStyleAll: tabBtnStyle(s.district === "all"),
+      districtName: districtStats ? this.tv(districtStats.districtName) : "",
+      totalSample: districtStats ? districtStats.totalSample : "",
+      currentN,
+      currentPct,
+      communityGroups,
+      hasSubCommunityPickers: subCommunityPickers.length > 0,
+      subCommunityPickers,
+      mapAllTab,
+      mapVulnerabilityTab,
+      mapDimensionTabs,
+      mapSectionToggles,
+      hasMapValuePickers: mapValuePickers.length > 0,
+      mapValuePickers,
+      mapValuePickerRiskHint: this.t("riskValHint"),
+
+      dimensionTabs,
+      allTab,
+      vulnerabilityTab,
+      sectionToggles,
+      showSectionPicker,
+      clearStatFilters: () => this.setState({ selectedDimensions: [], selectedSectionKeys: [] }),
+      breakdownOptions,
+      noneBreakdownOption,
+      breakdownGroups,
+      showBreakdownSection,
+      setChartBar: () => this.setState({ chartType: "bar" }),
+      setChartPie: () => this.setState({ chartType: "pie" }),
+      setChartTable: () => this.setState({ chartType: "table" }),
+      chartTypeBtnStyleBar: styleStr({
+        flex: 1, padding: "7px 0", borderRadius: "8px", fontSize: "12px", fontWeight: 600, cursor: "pointer",
+        border: "1px solid " + (s.chartType === "bar" ? "#C43D82" : "hsl(200 15% 88%)"),
+        background: s.chartType === "bar" ? "#C43D82" : "#fff",
+        color: s.chartType === "bar" ? "#fff" : "hsl(200 25% 25%)",
+      }),
+      chartTypeBtnStylePie: styleStr({
+        flex: 1, padding: "7px 0", borderRadius: "8px", fontSize: "12px", fontWeight: 600, cursor: "pointer",
+        border: "1px solid " + (s.chartType === "pie" ? "#C43D82" : "hsl(200 15% 88%)"),
+        background: s.chartType === "pie" ? "#C43D82" : "#fff",
+        color: s.chartType === "pie" ? "#fff" : "hsl(200 25% 25%)",
+      }),
+      chartTypeBtnStyleTable: styleStr({
+        flex: 1, padding: "7px 0", borderRadius: "8px", fontSize: "12px", fontWeight: 600, cursor: "pointer",
+        border: "1px solid " + (s.chartType === "table" ? "#C43D82" : "hsl(200 15% 88%)"),
+        background: s.chartType === "table" ? "#C43D82" : "#fff",
+        color: s.chartType === "table" ? "#fff" : "hsl(200 25% 25%)",
+      }),
+      sectionViews,
+      printChartSections,
+      printChartsSubtitle,
+      statFilterSummary,
+      hasStatFilterSummary: !!statFilterSummary,
+      mapFilterSummary,
+      hasMapFilterSummary,
+      showStatResults,
+      exportChartsPdf: () => this.exportChartsPdf(),
+      exportSummaryCsv: () => this.exportSummaryCsv(),
+      chartTooltipVisible: !!s.chartTooltip,
+      chartTooltipText: s.chartTooltip ? s.chartTooltip.text : "",
+      chartTooltipStyle: s.chartTooltip
+        ? "position:fixed; left:" + (s.chartTooltip.x + 14) + "px; top:" + (s.chartTooltip.y + 14) + "px; background:hsl(200 30% 12%); color:#fff; font-size:11px; font-weight:600; padding:6px 10px; border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,.2); pointer-events:none; z-index:9999; white-space:nowrap;"
+        : "display:none;",
+    };
+  }
+}
+
+</script>
+</body>
+</html>
