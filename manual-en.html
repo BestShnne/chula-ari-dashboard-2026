@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    doc-page:not(:defined) { visibility: hidden; }
+    body { margin: 0; }
+    h1, h2, h3 { text-wrap: balance; }
+    p, li { text-wrap: pretty; }
+  </style>
+  <script src="./doc-page.js"></script>
+</helmet>
+
+<doc-page margin="0.7in">
+
+  <div style="font-family:'IBM Plex Sans','Sarabun',sans-serif; color:hsl(200 25% 12%);">
+
+  <div style="border-radius:16px; overflow:hidden; background:linear-gradient(135deg, hsl(329 53% 45%), #C43D82); color:#fff; padding:40px 36px 34px; margin-bottom:8px;">
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:26px;">
+      <div style="width:52px; height:52px; border-radius:12px; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden;"><img src="chula-ari-logo.png" alt="Chula ARi" style="width:100%; height:100%; object-fit:contain;"></div>
+      <div style="font-size:15px; font-weight:600; opacity:.92;">Chula ARi · Elderly Database System</div>
+    </div>
+    <div style="font-size:13px; font-weight:600; letter-spacing:2px; text-transform:uppercase; opacity:.85; margin-bottom:10px;">User Manual</div>
+    <div style="font-size:34px; font-weight:700; line-height:1.2; margin-bottom:14px;">Elderly Database System<br>Pathumwan &amp; Prawet Districts</div>
+    <div style="font-size:15px; font-weight:400; opacity:.9; max-width:80%;">Programme to drive and develop systems supporting the Bangkok Elderly Action Plan in pilot communities</div>
+  </div>
+  <div style="font-size:12px; color:#8a6b7c; text-align:right; margin-bottom:8px;">Revised July 2026</div>
+
+  <div style="background:#fdf2f8; border:1px solid #f3c6dd; border-radius:12px; padding:20px 24px; break-inside:avoid; margin-bottom:8px;">
+    <div style="font-size:16px; font-weight:700; color:#ad1457; margin-bottom:12px;">Contents</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 28px; font-size:13.5px; color:hsl(200 25% 25%);">
+      <div>1. What is this system?</div>
+      <div>6. Statistics page</div>
+      <div>2. Getting started &amp; shared components</div>
+      <div>7. Filters &amp; the filter summary</div>
+      <div>3. Shared data filters (district · group · community)</div>
+      <div>8. Exporting to PDF &amp; CSV</div>
+      <div>4. Overview page</div>
+      <div>9. Tips &amp; FAQ</div>
+      <div>5. Map page</div>
+      <div>10. Glossary</div>
+    </div>
+  </div>
+
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">1. What is this system?</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 12px;">The Elderly Database System is a tool to survey, analyse and visualise data on older adults in the pilot areas of <b>Pathumwan</b> and <b>Prawet</b> districts. It helps community officers, volunteers, and researchers understand the elderly population across many dimensions — health, economy, society, technology, environment, and level of vulnerability.</p>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 14px;">The system is split into <b>3 main pages</b>, switchable from the buttons at the top-right of every page:</p>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; break-inside:avoid; margin-bottom:8px;">
+    <div style="border:1px solid #f3c6dd; border-radius:10px; padding:14px; background:#fff;">
+      <div style="font-size:26px; margin-bottom:6px;">📈</div>
+      <div style="font-size:14px; font-weight:700; color:#ad1457; margin-bottom:4px;">Overview</div>
+      <div style="font-size:12.5px; line-height:1.6; color:hsl(200 25% 30%);">Key figures of the elderly population at a single glance</div>
+    </div>
+    <div style="border:1px solid #f3c6dd; border-radius:10px; padding:14px; background:#fff;">
+      <div style="font-size:26px; margin-bottom:6px;">📊</div>
+      <div style="font-size:14px; font-weight:700; color:#ad1457; margin-bottom:4px;">Statistics</div>
+      <div style="font-size:12.5px; line-height:1.6; color:hsl(200 25% 30%);">Drill into each dimension, compare groups, and cross-tabulate</div>
+    </div>
+    <div style="border:1px solid #f3c6dd; border-radius:10px; padding:14px; background:#fff;">
+      <div style="font-size:26px; margin-bottom:6px;">🗺️</div>
+      <div style="font-size:14px; font-weight:700; color:#ad1457; margin-bottom:4px;">Map</div>
+      <div style="font-size:12.5px; line-height:1.6; color:hsl(200 25% 30%);">See actual residence points on a map with per-household details</div>
+    </div>
+  </div>
+
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">2. Getting started &amp; shared components</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 14px;">The top bar (header) and some tools appear the same on every page, so you can browse data continuously.</p>
+
+  <div style="border:1px solid #e6d5df; border-radius:10px; overflow:hidden; break-inside:avoid; margin:0 0 16px;">
+    <img src="screenshots/manual-en-overview.png" alt="Overview screen" style="width:100%; display:block;">
+    <div style="font-size:12px; color:#8a6b7c; padding:8px 12px; background:#fdf2f8;">Figure 1 — Top menu bar (switch 3 pages), district selector, and the "Show Unknown" toggle</div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:8px;">
+    <div style="display:flex; gap:12px; align-items:flex-start;">
+      <span style="flex-shrink:0; width:24px; height:24px; border-radius:999px; background:#C43D82; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">A</span>
+      <div style="font-size:14px; line-height:1.6;"><b>Page switcher</b> (top-right) — choose Overview / Map / Statistics at any time. Beside it, the <b>🌐 language button</b> switches the whole interface between Thai and English.</div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:flex-start;">
+      <span style="flex-shrink:0; width:24px; height:24px; border-radius:999px; background:#C43D82; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">B</span>
+      <div style="font-size:14px; line-height:1.6;"><b>District selector</b> — pick "All districts", "Pathumwan" or "Prawet". It affects both the Statistics and Map pages.</div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:flex-start;">
+      <span style="flex-shrink:0; width:24px; height:24px; border-radius:999px; background:#C43D82; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">C</span>
+      <div style="font-size:14px; line-height:1.6;"><b>"Show Unknown" toggle</b> — turn on to include people who answered "Unknown / not specified" (shown in grey); turn off to hide them from all charts and tables.</div>
+    </div>
+  </div>
+
+  <div style="background:#fff8fc; border-left:4px solid #C43D82; border-radius:0 8px 8px 0; padding:12px 16px; break-inside:avoid; margin:6px 0 8px;">
+    <div style="font-size:13px; font-weight:700; color:#ad1457; margin-bottom:3px;">💡 Tip</div>
+    <div style="font-size:13.5px; line-height:1.6;">Turn off "Unknown" when you want to see proportions of only those who gave a clear answer — the percentages in the pie charts become easier to read.</div>
+  </div>
+
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">3. Shared data filters: district · group · community</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 12px;">Both the Statistics and Map pages use the same hierarchical area selector:</p>
+  <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:13.5px; font-weight:600; margin-bottom:14px;">
+    <span style="background:#C43D82; color:#fff; padding:6px 14px; border-radius:999px;">Select district</span>
+    <span style="color:#C43D82;">→</span>
+    <span style="background:#e05c9e; color:#fff; padding:6px 14px; border-radius:999px;">Select group (cluster)</span>
+    <span style="color:#C43D82;">→</span>
+    <span style="background:#f0a6cd; color:#fff; padding:6px 14px; border-radius:999px;">Select community</span>
+  </div>
+  <ul style="font-size:14px; line-height:1.8; margin:0 0 8px; padding-left:22px;">
+    <li>A <b>group</b> bundles several communities together by area (e.g. Charu Mueang group, On Nut group) — click a group chip to select/deselect; multiple groups can be selected.</li>
+    <li>A <b>community</b> is a sub-unit within a group. Once a group is selected you can drill into specific communities.</li>
+    <li><b>Selecting nothing</b> = show combined data for the chosen district.</li>
+  </ul>
+
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">4. Overview page</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 14px;">The first page that opens. It summarises the structure of the elderly population on one screen — ideal for a quick, high-level presentation.</p>
+  <ul style="font-size:14px; line-height:1.8; margin:0 0 8px; padding-left:22px;">
+    <li><b>Sex</b> and <b>age group</b> — horizontal proportion bars; hover to see the real figures.</li>
+    <li><b>Per-dimension cards</b> — Health, Economy, Society, Technology, Environment; each shows a pie chart of a key topic in that dimension.</li>
+    <li>Dark pink = the "positive/has" value, light pink = the "negative/none" value, so you can read the direction instantly.</li>
+  </ul>
+
+  <div style="background:#f0fbf7; border:1px solid #b8e6d2; border-radius:10px; padding:14px 18px; break-inside:avoid; margin:8px 0;">
+    <div style="font-size:13px; font-weight:700; color:#1a7a52; margin-bottom:8px;">🎯 Worked example</div>
+    <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 25%); margin-bottom:10px;">"I want an overview of older adults in <b>Prawet district</b> — which sex is the majority, which age group they fall in, and what proportion live alone."</div>
+    <div style="font-size:12.5px; font-weight:700; color:#1a7a52; margin-bottom:6px;">Answer — click in this order</div>
+    <ol style="font-size:13px; line-height:1.75; margin:0; padding-left:20px; color:hsl(200 25% 25%);">
+      <li>Click <b>"Overview"</b> at the top-right.</li>
+      <li>In the <b>district selector</b> choose <b>"Prawet"</b>.</li>
+      <li>Read the <b>"Sex"</b> and <b>"Age group"</b> bars at the top — hover each bar for the exact count/percentage.</li>
+      <li>Scroll to the <b>"Society"</b> dimension card and read the pie chart on living arrangement / living alone.</li>
+    </ol>
+  </div>
+
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">5. Map page</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 14px;">Shows the actual residence points of older adults on a map. The size and colour of each dot reflect the number of people and the area group — ideal for planning field visits.</p>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; break-inside:avoid; margin:0 0 16px;">
+    <div style="border:1px solid #e6d5df; border-radius:10px; overflow:hidden;">
+      <img src="screenshots/manual-en-mapview.png" alt="Map and residence points" style="width:100%; display:block;">
+      <div style="font-size:11.5px; color:#8a6b7c; padding:7px 10px; background:#fdf2f8;">Figure 2 — Summary cards on top + points on the map</div>
+    </div>
+    <div style="border:1px solid #e6d5df; border-radius:10px; overflow:hidden;">
+      <img src="screenshots/manual-en-popup.png" alt="Per-household info card" style="width:100%; display:block;">
+      <div style="font-size:11.5px; color:#8a6b7c; padding:7px 10px; background:#fdf2f8;">Figure 3 — Info card shown when a point is clicked</div>
+    </div>
+  </div>
+
+  <ul style="font-size:14px; line-height:1.8; margin:0 0 8px; padding-left:22px;">
+    <li><b>Summary cards on top</b> — elderly shown, residence points, number of communities, and average age.</li>
+    <li><b>Click a point</b> to open the per-household card showing ID · sex · age · ADL · chronic disease and the household's <b>vulnerability level</b>.</li>
+    <li><b>📄 Export this house as PDF</b> — creates a document for the selected household only.</li>
+    <li><b>🧭 Directions</b> — opens Google Maps routing to the household's coordinates (in a new browser tab).</li>
+    <li><b>Filter map points</b> — pick a dimension / sub-topic / value to show only people who match, e.g. only those with a fall history or high vulnerability.</li>
+  </ul>
+
+  <div style="background:#f0fbf7; border:1px solid #b8e6d2; border-radius:10px; padding:14px 18px; break-inside:avoid; margin:8px 0;">
+    <div style="font-size:13px; font-weight:700; color:#1a7a52; margin-bottom:8px;">🎯 Worked example</div>
+    <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 25%); margin-bottom:10px;">"I need to find elderly households <b>with a fall history</b> in the <b>Charu Mueang group</b> to plan visits and navigate to their homes."</div>
+    <div style="font-size:12.5px; font-weight:700; color:#1a7a52; margin-bottom:6px;">Answer — click in this order</div>
+    <ol style="font-size:13px; line-height:1.75; margin:0; padding-left:20px; color:hsl(200 25% 25%);">
+      <li>Click <b>"Map"</b> at the top-right.</li>
+      <li>Choose <b>district selector → "Pathumwan"</b>, then click the group chip <b>"Charu Mueang"</b>.</li>
+      <li>In the map filter pick dimension <b>"Health"</b> → sub-topic <b>"Fall history"</b> → value <b>"Has fallen"</b>.</li>
+      <li>The map now shows only matching households — <b>click a point</b> to see ID · ADL · vulnerability level.</li>
+      <li>Click <b>🧭 Directions</b> to open the route, or <b>📄 Export this house as PDF</b> to keep as a field document.</li>
+    </ol>
+  </div>
+
+  <div style="background:#fff8fc; border-left:4px solid #C43D82; border-radius:0 8px 8px 0; padding:12px 16px; break-inside:avoid; margin:6px 0 8px;">
+    <div style="font-size:13px; font-weight:700; color:#ad1457; margin-bottom:3px;">⚠️ Note</div>
+    <div style="font-size:13.5px; line-height:1.6;">If the base map does not appear (grey background), it is usually a network blocking the map tiles (OpenStreetMap). Open on a normal network or refresh. The data points and clicking still work as usual.</div>
+  </div>
+
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">6. Statistics page</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 14px;">The page for drilling in and comparing. It works as 4 steps from top to bottom.</p>
+
+  <div style="border:1px solid #e6d5df; border-radius:10px; overflow:hidden; break-inside:avoid; margin:0 0 16px;">
+    <img src="screenshots/manual-en-stats-charts.png" alt="Statistics page steps" style="width:100%; display:block;">
+    <div style="font-size:12px; color:#8a6b7c; padding:8px 12px; background:#fdf2f8;">Figure 4 — Select dimension → sub-topic → break down (cross-tab) → data type</div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:8px;">
+    <div style="display:flex; gap:12px; align-items:flex-start; break-inside:avoid;">
+      <span style="flex-shrink:0; width:26px; height:26px; border-radius:999px; background:#C43D82; color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center;">1</span>
+      <div style="font-size:14px; line-height:1.65;"><b>Select dimensions of interest</b> — pick several (Health, Economy, etc.) or "All dimensions". There is a "⚠️ Vulnerability Index" tab next to the All button. If no dimension is selected, no sub-topics are shown.</div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:flex-start; break-inside:avoid;">
+      <span style="flex-shrink:0; width:26px; height:26px; border-radius:999px; background:#C43D82; color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center;">2</span>
+      <div style="font-size:14px; line-height:1.65;"><b>Select sub-topics</b> — choose the questions/indicators to display, ordered by the dimensions above. Each sub-topic renders as its own chart or table.</div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:flex-start; break-inside:avoid;">
+      <span style="flex-shrink:0; width:26px; height:26px; border-radius:999px; background:#C43D82; color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center;">3</span>
+      <div style="font-size:14px; line-height:1.65;"><b>Break down by (cross-tab)</b> — pick one variable at a time to cross-tabulate, e.g. view "Smartphone use" split by "Age group". Rows are the breakdown groups; columns are the sub-topic values.</div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:flex-start; break-inside:avoid;">
+      <span style="flex-shrink:0; width:26px; height:26px; border-radius:999px; background:#C43D82; color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center;">4</span>
+      <div style="font-size:14px; line-height:1.65;"><b>Select data type</b> — switch the display between <b>Table</b>, <b>Bar chart</b> or <b>Pie chart</b> as you like.</div>
+    </div>
+  </div>
+
+  <div style="background:#f0fbf7; border:1px solid #b8e6d2; border-radius:10px; padding:14px 18px; break-inside:avoid; margin:8px 0;">
+    <div style="font-size:13px; font-weight:700; color:#1a7a52; margin-bottom:8px;">🎯 Worked example</div>
+    <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 25%); margin-bottom:10px;">"I want to know how <b>smartphone use</b> among older adults in Pathumwan differs by <b>age group</b>, then use the result in a report."</div>
+    <div style="font-size:12.5px; font-weight:700; color:#1a7a52; margin-bottom:6px;">Answer — click in this order</div>
+    <ol style="font-size:13px; line-height:1.75; margin:0; padding-left:20px; color:hsl(200 25% 25%);">
+      <li>Click <b>"Statistics"</b> at the top-right, then choose <b>district selector → "Pathumwan"</b>.</li>
+      <li>Step 1: select dimension <b>"Technology"</b>.</li>
+      <li>Step 2: select sub-topic <b>"Smartphone use"</b>.</li>
+      <li>Step 3: under <b>"Break down by"</b> choose <b>"Age group"</b>.</li>
+      <li>Step 4: choose data type <b>"Bar chart"</b> to compare each age group easily.</li>
+      <li>Click <b>"Charts summary CSV"</b> (or PDF) to take the table into analysis / a report.</li>
+    </ol>
+  </div>
+
+  <div style="background:#fff8fc; border-left:4px solid #C43D82; border-radius:0 8px 8px 0; padding:12px 16px; break-inside:avoid; margin:6px 0 8px;">
+    <div style="font-size:13px; font-weight:700; color:#ad1457; margin-bottom:3px;">💡 Tip</div>
+    <div style="font-size:13.5px; line-height:1.6;">Use cross-tab together with multiple group selection to find spatial differences, e.g. comparing vulnerability levels between communities. Then click "Clear filters" to start over instantly.</div>
+  </div>
+
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">7. Filters &amp; the filter summary</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 12px;">Whenever you set filters, the system shows a <b>filter summary</b> so you can see exactly which slice of data you are viewing. It appears both on screen (above the charts/cards) and in exported files.</p>
+  <div style="background:hsl(320 30% 45% / .06); border:1px solid hsl(329 53% 62% / .3); border-radius:10px; padding:12px 16px; font-size:13px; color:hsl(329 40% 30%); break-inside:avoid; margin-bottom:10px;">
+    🔎 Example: <b>Filters applied:</b> District: Pathumwan · Group: Charu Mueang · Community: Trok Salak Hin · Sex: Female, Male · Showing "Unknown"
+  </div>
+  <ul style="font-size:14px; line-height:1.8; margin:0 0 8px; padding-left:22px;">
+    <li>Selecting several values within the same topic separates them with <b>","</b> (e.g. Female, Male), meaning "both" — not "either/or".</li>
+    <li>The <b>Clear filters</b> button resets everything to the defaults.</li>
+  </ul>
+
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">8. Exporting to PDF &amp; CSV</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 14px;">Both the Statistics and Map pages have export buttons. Every file attaches the filter summary and the date/time the report was generated for reference.</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; break-inside:avoid; margin-bottom:8px;">
+    <div style="border:1px solid #f3c6dd; border-radius:10px; padding:14px 16px; background:#fff;">
+      <div style="font-size:15px; font-weight:700; color:#ad1457; margin-bottom:6px;">📄 Export PDF</div>
+      <div style="font-size:13px; line-height:1.65;">A print/share-ready report with the charts, tables or map as currently shown — good for presenting and keeping as a record.</div>
+    </div>
+    <div style="border:1px solid #f3c6dd; border-radius:10px; padding:14px 16px; background:#fff;">
+      <div style="font-size:15px; font-weight:700; color:#ad1457; margin-bottom:6px;">📊 Export CSV</div>
+      <div style="font-size:13px; line-height:1.65;">Raw data as a table; open it in Excel / Google Sheets for further analysis.</div>
+    </div>
+  </div>
+
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">9. Tips &amp; FAQ</h2>
+  <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:8px;">
+    <div style="break-inside:avoid;">
+      <div style="font-size:14px; font-weight:700; color:hsl(200 25% 15%); margin-bottom:3px;">❓ I selected a group but see no communities?</div>
+      <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 30%);">You must select a "group" first; the "community" options within that group only appear afterwards.</div>
+    </div>
+    <div style="break-inside:avoid;">
+      <div style="font-size:14px; font-weight:700; color:hsl(200 25% 15%); margin-bottom:3px;">❓ The chart numbers aren't what I expected?</div>
+      <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 30%);">Check the "Show Unknown" toggle and the filter summary at the top to see which district/group/community is being filtered.</div>
+    </div>
+    <div style="break-inside:avoid;">
+      <div style="font-size:14px; font-weight:700; color:hsl(200 25% 15%); margin-bottom:3px;">❓ Can I compare several areas at once?</div>
+      <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 30%);">On the Statistics page, select several groups at once; each group appears as its own colour series in the same chart/table.</div>
+    </div>
+    <div style="break-inside:avoid;">
+      <div style="font-size:14px; font-weight:700; color:hsl(200 25% 15%); margin-bottom:3px;">❓ Directions button shows "blocked"?</div>
+      <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 30%);">This only happens inside an editor/preview that restricts Google connections. On the live page it navigates normally.</div>
+    </div>
+  </div>
+
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">10. Glossary</h2>
+  <table style="width:100%; border-collapse:collapse; font-size:13.5px;">
+    <thead>
+      <tr style="background:#fdf2f8;">
+        <th style="text-align:left; padding:9px 12px; color:#ad1457; border-bottom:2px solid #f3c6dd; width:32%;">Term</th>
+        <th style="text-align:left; padding:9px 12px; color:#ad1457; border-bottom:2px solid #f3c6dd;">Meaning</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">Dimension</td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">A broad data area, e.g. health, economy, society, technology, environment.</td></tr>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">Sub-topic</td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">An indicator/question within a dimension that is displayed.</td></tr>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">Cluster (group)</td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">A bundle of several communities grouped by area.</td></tr>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">Community</td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">A sub-area unit within a group.</td></tr>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">Cross-tab</td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">Splitting a sub-topic by another variable to see the relationship.</td></tr>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">ADL</td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">Activities of Daily Living — indicates level of dependency.</td></tr>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">Vulnerability level</td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">An index summarising an older adult's risk/vulnerability (low · moderate · high · very high).</td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:30px; padding-top:16px; border-top:1px solid #f0e0e8; font-size:12px; color:#8a6b7c; text-align:center;">Chula ARi · Elderly Database System, Pathumwan &amp; Prawet Districts — User Manual</div>
+
+  </div>
+</doc-page>
+</x-dc>
+</body>
+</html>

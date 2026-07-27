@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    doc-page:not(:defined) { visibility: hidden; }
+    body { margin: 0; }
+    h1, h2, h3 { text-wrap: balance; }
+    p, li { text-wrap: pretty; }
+  </style>
+  <script src="./doc-page.js"></script>
+</helmet>
+
+<doc-page margin="0.7in">
+
+  <!-- ============ COVER ============ -->
+  <div style="font-family:'IBM Plex Sans Thai','Sarabun',sans-serif; color:hsl(200 25% 12%);">
+
+  <div style="border-radius:16px; overflow:hidden; background:linear-gradient(135deg, hsl(329 53% 45%), #C43D82); color:#fff; padding:40px 36px 34px; margin-bottom:8px;">
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:26px;">
+      <div style="width:52px; height:52px; border-radius:12px; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden;"><img src="chula-ari-logo.png" alt="Chula ARi" style="width:100%; height:100%; object-fit:contain;"></div>
+      <div style="font-size:15px; font-weight:600; opacity:.92;">Chula ARi · ระบบฐานข้อมูลผู้สูงอายุ</div>
+    </div>
+    <div style="font-size:13px; font-weight:600; letter-spacing:2px; text-transform:uppercase; opacity:.85; margin-bottom:10px;">คู่มือการใช้งาน · User Manual</div>
+    <div style="font-size:34px; font-weight:700; line-height:1.2; margin-bottom:14px;">ระบบฐานข้อมูลผู้สูงอายุ<br>เขตปทุมวัน &amp; เขตประเวศ</div>
+    <div style="font-size:15px; font-weight:400; opacity:.9; max-width:80%;">โครงการการขับเคลื่อนและพัฒนาระบบรองรับแผนปฏิบัติการด้านผู้สูงอายุกรุงเทพมหานครในชุมชนนำร่อง</div>
+  </div>
+  <div style="font-size:12px; color:#8a6b7c; text-align:right; margin-bottom:8px;">ฉบับปรับปรุง กรกฎาคม 2569</div>
+
+  <!-- ============ TOC ============ -->
+  <div style="background:#fdf2f8; border:1px solid #f3c6dd; border-radius:12px; padding:20px 24px; break-inside:avoid; margin-bottom:8px;">
+    <div style="font-size:16px; font-weight:700; color:#ad1457; margin-bottom:12px;">สารบัญ</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 28px; font-size:13.5px; color:hsl(200 25% 25%);">
+      <div>1. ระบบนี้คืออะไร</div>
+      <div>6. หน้าสถิติ (Statistics)</div>
+      <div>2. เริ่มต้นใช้งาน &amp; ส่วนประกอบร่วม</div>
+      <div>7. ตัวกรอง &amp; ข้อความสรุปฟิลเตอร์</div>
+      <div>3. ตัวกรองข้อมูลร่วม (เขต · กลุ่ม · ชุมชน)</div>
+      <div>8. การส่งออก PDF &amp; CSV</div>
+      <div>4. หน้าภาพรวม (Overview)</div>
+      <div>9. เคล็ดลับ &amp; คำถามที่พบบ่อย</div>
+      <div>5. หน้าแผนที่ (Map)</div>
+      <div>10. อภิธานศัพท์ (Glossary)</div>
+    </div>
+  </div>
+
+  <!-- ============ 1. WHAT ============ -->
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">1. ระบบนี้คืออะไร</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 12px;">ระบบฐานข้อมูลผู้สูงอายุ เป็นเครื่องมือสำรวจ วิเคราะห์ และแสดงผลข้อมูลผู้สูงอายุในพื้นที่นำร่อง <b>เขตปทุมวัน</b> และ <b>เขตประเวศ</b> ช่วยให้เจ้าหน้าที่ชุมชน อาสาสมัคร (อสส.) และนักวิชาการ เข้าใจสภาพประชากรผู้สูงอายุในหลายมิติ — ทั้งสุขภาพ เศรษฐกิจ สังคม เทคโนโลยี สิ่งแวดล้อม และระดับความเปราะบาง (vulnerability)</p>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 14px;">ระบบแบ่งออกเป็น <b>3 หน้าหลัก</b> เลือกได้จากปุ่มมุมบนขวาของทุกหน้า:</p>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; break-inside:avoid; margin-bottom:8px;">
+    <div style="border:1px solid #f3c6dd; border-radius:10px; padding:14px; background:#fff;">
+      <div style="font-size:26px; margin-bottom:6px;">📈</div>
+      <div style="font-size:14px; font-weight:700; color:#ad1457; margin-bottom:4px;">ภาพรวม</div>
+      <div style="font-size:12.5px; line-height:1.6; color:hsl(200 25% 30%);">สรุปตัวเลขสำคัญของประชากรผู้สูงอายุแบบเห็นภาพเดียวจบ</div>
+    </div>
+    <div style="border:1px solid #f3c6dd; border-radius:10px; padding:14px; background:#fff;">
+      <div style="font-size:26px; margin-bottom:6px;">📊</div>
+      <div style="font-size:14px; font-weight:700; color:#ad1457; margin-bottom:4px;">สถิติ</div>
+      <div style="font-size:12.5px; line-height:1.6; color:hsl(200 25% 30%);">เจาะลึกรายมิติ เปรียบเทียบกลุ่ม และไขว้ข้อมูล (cross-tab)</div>
+    </div>
+    <div style="border:1px solid #f3c6dd; border-radius:10px; padding:14px; background:#fff;">
+      <div style="font-size:26px; margin-bottom:6px;">🗺️</div>
+      <div style="font-size:14px; font-weight:700; color:#ad1457; margin-bottom:4px;">แผนที่</div>
+      <div style="font-size:12.5px; line-height:1.6; color:hsl(200 25% 30%);">ดูจุดที่อยู่อาศัยจริงบนแผนที่ พร้อมข้อมูลรายบ้าน</div>
+    </div>
+  </div>
+
+  <!-- ============ 2. GETTING STARTED ============ -->
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">2. เริ่มต้นใช้งาน &amp; ส่วนประกอบร่วม</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 14px;">แถบด้านบน (Header) และเครื่องมือบางอย่างจะปรากฏเหมือนกันในทุกหน้า เพื่อให้สลับดูข้อมูลได้ต่อเนื่อง</p>
+
+  <div style="border:1px solid #e6d5df; border-radius:10px; overflow:hidden; break-inside:avoid; margin:0 0 16px;">
+    <img src="screenshots/manual-overview.png" alt="หน้าจอภาพรวม" style="width:100%; display:block;">
+    <div style="font-size:12px; color:#8a6b7c; padding:8px 12px; background:#fdf2f8;">รูปที่ 1 — แถบเมนูด้านบน (สลับ 3 หน้า), ตัวเลือกเขต, และสวิตช์ "แสดงคำตอบไม่ทราบ"</div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:8px;">
+    <div style="display:flex; gap:12px; align-items:flex-start;">
+      <span style="flex-shrink:0; width:24px; height:24px; border-radius:999px; background:#C43D82; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">A</span>
+      <div style="font-size:14px; line-height:1.6;"><b>ปุ่มสลับหน้า</b> (มุมบนขวา) — เลือก ภาพรวม / แผนที่ / สถิติ ได้ตลอดเวลา</div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:flex-start;">
+      <span style="flex-shrink:0; width:24px; height:24px; border-radius:999px; background:#C43D82; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">B</span>
+      <div style="font-size:14px; line-height:1.6;"><b>ตัวเลือกเขต</b> — เลือก "ทุกเขต", "เขตปทุมวัน" หรือ "เขตประเวศ" มีผลกับทั้งหน้าสถิติและแผนที่</div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:flex-start;">
+      <span style="flex-shrink:0; width:24px; height:24px; border-radius:999px; background:#C43D82; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">C</span>
+      <div style="font-size:14px; line-height:1.6;"><b>สวิตช์ "แสดงคำตอบไม่ทราบ"</b> — เปิดเพื่อรวมผู้ที่ตอบว่า "ไม่ทราบ / ไม่ระบุ" (แสดงด้วยสีเทา) ปิดเพื่อซ่อนออกจากทุกกราฟและตาราง</div>
+    </div>
+  </div>
+
+  <div style="background:#fff8fc; border-left:4px solid #C43D82; border-radius:0 8px 8px 0; padding:12px 16px; break-inside:avoid; margin:6px 0 8px;">
+    <div style="font-size:13px; font-weight:700; color:#ad1457; margin-bottom:3px;">💡 เคล็ดลับ</div>
+    <div style="font-size:13.5px; line-height:1.6;">ปิดสวิตช์ "ไม่ทราบ" เมื่อต้องการดูสัดส่วนเฉพาะผู้ที่ให้คำตอบชัดเจน จะทำให้เปอร์เซ็นต์ในกราฟวงกลมอ่านง่ายขึ้น</div>
+  </div>
+
+  <!-- ============ 3. SHARED FILTER ============ -->
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">3. ตัวกรองข้อมูลร่วม: เขต · กลุ่ม · ชุมชน</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 12px;">ทั้งหน้าสถิติและหน้าแผนที่ใช้ระบบเลือกพื้นที่แบบเดียวกัน เป็นลำดับขั้น:</p>
+  <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:13.5px; font-weight:600; margin-bottom:14px;">
+    <span style="background:#C43D82; color:#fff; padding:6px 14px; border-radius:999px;">เลือกเขต</span>
+    <span style="color:#C43D82;">→</span>
+    <span style="background:#e05c9e; color:#fff; padding:6px 14px; border-radius:999px;">เลือกกลุ่ม (cluster)</span>
+    <span style="color:#C43D82;">→</span>
+    <span style="background:#f0a6cd; color:#fff; padding:6px 14px; border-radius:999px;">เลือกชุมชน (community)</span>
+  </div>
+  <ul style="font-size:14px; line-height:1.8; margin:0 0 8px; padding-left:22px;">
+    <li><b>กลุ่ม</b> คือการรวมชุมชนหลายแห่งเข้าเป็นก้อนตามพื้นที่ (เช่น กลุ่มจารุเมือง, กลุ่มอ่อนนุช) — คลิกชิปชื่อกลุ่มเพื่อเลือก/ยกเลิก เลือกได้หลายกลุ่ม</li>
+    <li><b>ชุมชน</b> เป็นหน่วยย่อยภายในกลุ่ม เมื่อเลือกกลุ่มแล้วจึงเลือกเจาะเฉพาะบางชุมชนได้</li>
+    <li><b>ไม่เลือกอะไรเลย</b> = แสดงข้อมูลรวมทั้งเขตที่เลือกไว้</li>
+  </ul>
+
+  <!-- ============ 4. OVERVIEW ============ -->
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">4. หน้าภาพรวม (Overview)</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 14px;">หน้าแรกที่เปิดขึ้นมา สรุปโครงสร้างประชากรผู้สูงอายุแบบเห็นทั้งหมดในหน้าเดียว เหมาะสำหรับการนำเสนอภาพรวมอย่างรวดเร็ว</p>
+  <ul style="font-size:14px; line-height:1.8; margin:0 0 8px; padding-left:22px;">
+    <li><b>เพศ</b> และ <b>ช่วงอายุ</b> — แถบสัดส่วนแนวนอน เลื่อนเมาส์ชี้เพื่อดูตัวเลขจริง</li>
+    <li><b>การ์ดรายมิติ</b> — สุขภาพ, เศรษฐกิจ, สังคม, เทคโนโลยี, สิ่งแวดล้อม แต่ละใบมีกราฟวงกลมของหัวข้อเด่นในมิตินั้น</li>
+    <li>สีชมพูเข้ม = ค่าด้าน "บวก/มี", สีชมพูอ่อน = ค่าด้าน "ลบ/ไม่มี" เพื่ออ่านทิศทางได้ทันที</li>
+  </ul>
+
+  <div style="background:#f0fbf7; border:1px solid #b8e6d2; border-radius:10px; padding:14px 18px; break-inside:avoid; margin:8px 0;">
+    <div style="font-size:13px; font-weight:700; color:#1a7a52; margin-bottom:8px;">🎯 โจทย์ตัวอย่าง</div>
+    <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 25%); margin-bottom:10px;">"อยากดูภาพรวมผู้สูงอายุใน<b>เขตประเวศ</b> ว่าส่วนใหญ่เป็นเพศใด อยู่ในช่วงอายุใด และมีสัดส่วนผู้ที่อยู่คนเดียวมากแค่ไหน"</div>
+    <div style="font-size:12.5px; font-weight:700; color:#1a7a52; margin-bottom:6px;">เฉลย — กดตามลำดับนี้</div>
+    <ol style="font-size:13px; line-height:1.75; margin:0; padding-left:20px; color:hsl(200 25% 25%);">
+      <li>กดปุ่ม <b>"ภาพรวม"</b> ที่มุมบนขวา</li>
+      <li>ที่ <b>ตัวเลือกเขต</b> เลือก <b>"เขตประเวศ"</b></li>
+      <li>ดูแถบสัดส่วน <b>"เพศ"</b> และ <b>"ช่วงอายุ"</b> ด้านบน — เลื่อนเมาส์ชี้แต่ละแถบเพื่ออ่านจำนวน/เปอร์เซ็นต์จริง</li>
+      <li>เลื่อนลงไปที่การ์ดมิติ <b>"สังคม"</b> อ่านกราฟวงกลมหัวข้อการอยู่อาศัย/อยู่คนเดียว</li>
+    </ol>
+  </div>
+
+  <!-- ============ 5. MAP ============ -->
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">5. หน้าแผนที่ (Map)</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 14px;">แสดงจุดที่อยู่อาศัยจริงของผู้สูงอายุบนแผนที่ ขนาดและสีของจุดสะท้อนจำนวนคนและกลุ่มพื้นที่ เหมาะกับการวางแผนลงพื้นที่</p>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; break-inside:avoid; margin:0 0 16px;">
+    <div style="border:1px solid #e6d5df; border-radius:10px; overflow:hidden;">
+      <img src="screenshots/manual-mapview.png" alt="แผนที่และจุดที่อยู่อาศัย" style="width:100%; display:block;">
+      <div style="font-size:11.5px; color:#8a6b7c; padding:7px 10px; background:#fdf2f8;">รูปที่ 2 — การ์ดสรุปด้านบน + จุดบนแผนที่</div>
+    </div>
+    <div style="border:1px solid #e6d5df; border-radius:10px; overflow:hidden;">
+      <img src="screenshots/manual-popup.png" alt="การ์ดข้อมูลรายบ้าน" style="width:100%; display:block;">
+      <div style="font-size:11.5px; color:#8a6b7c; padding:7px 10px; background:#fdf2f8;">รูปที่ 3 — การ์ดข้อมูลเมื่อคลิกจุด</div>
+    </div>
+  </div>
+
+  <ul style="font-size:14px; line-height:1.8; margin:0 0 8px; padding-left:22px;">
+    <li><b>การ์ดสรุปด้านบน</b> — จำนวนผู้สูงอายุที่แสดง, จุดที่อยู่อาศัย, จำนวนชุมชน และอายุเฉลี่ย</li>
+    <li><b>คลิกที่จุด</b> เพื่อเปิดการ์ดข้อมูลรายบ้าน แสดง ID · เพศ · อายุ · ADL · โรคประจำตัว และ <b>ระดับความเปราะบาง</b> ของบ้านนั้น</li>
+    <li><b>ปุ่ม 📄 ส่งออกบ้านนี้เป็น PDF</b> — สร้างเอกสารเฉพาะบ้านที่เลือก</li>
+    <li><b>ปุ่ม 🧭 นำเส้นทาง</b> — เปิด Google Maps นำทางไปยังพิกัดบ้าน (เปิดในแท็บใหม่ของเบราว์เซอร์)</li>
+    <li><b>กรองจุดบนแผนที่</b> — เลือกมิติ/หัวข้อย่อย/ค่า เพื่อแสดงเฉพาะผู้ที่ตรงเงื่อนไข เช่น เฉพาะผู้มีประวัติหกล้ม หรือระดับเปราะบางสูง</li>
+  </ul>
+
+  <div style="background:#f0fbf7; border:1px solid #b8e6d2; border-radius:10px; padding:14px 18px; break-inside:avoid; margin:8px 0;">
+    <div style="font-size:13px; font-weight:700; color:#1a7a52; margin-bottom:8px;">🎯 โจทย์ตัวอย่าง</div>
+    <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 25%); margin-bottom:10px;">"ต้องการหาบ้านผู้สูงอายุที่<b>มีประวัติหกล้ม</b>ใน<b>กลุ่มจารุเมือง</b> เพื่อวางแผนลงเยี่ยมและนำทางไปถึงบ้าน"</div>
+    <div style="font-size:12.5px; font-weight:700; color:#1a7a52; margin-bottom:6px;">เฉลย — กดตามลำดับนี้</div>
+    <ol style="font-size:13px; line-height:1.75; margin:0; padding-left:20px; color:hsl(200 25% 25%);">
+      <li>กดปุ่ม <b>"แผนที่"</b> ที่มุมบนขวา</li>
+      <li>เลือก <b>ตัวเลือกเขต → "เขตปทุมวัน"</b> แล้วคลิกชิปกลุ่ม <b>"จารุเมือง"</b></li>
+      <li>ที่ตัวกรองแผนที่ เลือกมิติ <b>"สุขภาพ"</b> → หัวข้อย่อย <b>"ประวัติการหกล้ม"</b> → ค่า <b>"เคยหกล้ม"</b></li>
+      <li>จุดบนแผนที่จะเหลือเฉพาะบ้านที่ตรงเงื่อนไข — <b>คลิกที่จุด</b> เพื่อดู ID · ADL · ระดับความเปราะบาง</li>
+      <li>กด <b>🧭 นำเส้นทาง</b> เพื่อเปิดเส้นทางไปบ้านนั้น หรือ <b>📄 ส่งออกบ้านนี้เป็น PDF</b> เก็บไว้เป็นเอกสารลงพื้นที่</li>
+    </ol>
+  </div>
+
+  <div style="background:#fff8fc; border-left:4px solid #C43D82; border-radius:0 8px 8px 0; padding:12px 16px; break-inside:avoid; margin:6px 0 8px;">
+    <div style="font-size:13px; font-weight:700; color:#ad1457; margin-bottom:3px;">⚠️ หมายเหตุ</div>
+    <div style="font-size:13.5px; line-height:1.6;">หากแผนที่พื้นหลังไม่ขึ้น (เป็นพื้นเทา) มักเกิดจากเครือข่ายที่บล็อกการโหลดแผนที่ (OpenStreetMap) ให้เปิดในเครือข่ายปกติหรือรีเฟรชอีกครั้ง จุดข้อมูลและการคลิกยังทำงานได้ตามปกติ</div>
+  </div>
+
+  <!-- ============ 6. STATISTICS ============ -->
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">6. หน้าสถิติ (Statistics)</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 14px;">หน้าสำหรับเจาะลึกและเปรียบเทียบ ทำงานเป็น 4 ขั้นตอนจากบนลงล่าง</p>
+
+  <div style="border:1px solid #e6d5df; border-radius:10px; overflow:hidden; break-inside:avoid; margin:0 0 16px;">
+    <img src="screenshots/manual-stats-charts.png" alt="ขั้นตอนหน้าสถิติ" style="width:100%; display:block;">
+    <div style="font-size:12px; color:#8a6b7c; padding:8px 12px; background:#fdf2f8;">รูปที่ 4 — เลือกมิติ → หัวข้อย่อย → แบ่งย่อย (cross-tab) → ประเภทข้อมูล</div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:8px;">
+    <div style="display:flex; gap:12px; align-items:flex-start; break-inside:avoid;">
+      <span style="flex-shrink:0; width:26px; height:26px; border-radius:999px; background:#C43D82; color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center;">1</span>
+      <div style="font-size:14px; line-height:1.65;"><b>เลือกมิติที่สนใจ</b> — เลือกได้หลายมิติ (สุขภาพ, เศรษฐกิจ ฯลฯ) หรือเลือก "ทุกมิติ" มีแท็บ "⚠️ ดัชนีระดับความเปราะบาง" อยู่ถัดจากปุ่มทุกมิติ ถ้าไม่เลือกมิติใดเลย ระบบจะไม่แสดงหัวข้อย่อย</div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:flex-start; break-inside:avoid;">
+      <span style="flex-shrink:0; width:26px; height:26px; border-radius:999px; background:#C43D82; color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center;">2</span>
+      <div style="font-size:14px; line-height:1.65;"><b>เลือกหัวข้อย่อย</b> — เลือกคำถาม/ตัวชี้วัดที่จะแสดง เรียงตามลำดับมิติด้านบน แต่ละหัวข้อย่อยแสดงเป็นกราฟหรือตารางของตัวเอง</div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:flex-start; break-inside:avoid;">
+      <span style="flex-shrink:0; width:26px; height:26px; border-radius:999px; background:#C43D82; color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center;">3</span>
+      <div style="font-size:14px; line-height:1.65;"><b>แบ่งย่อยตาม (cross-tab)</b> — เลือกได้ทีละ 1 ตัวแปร เพื่อไขว้ข้อมูล เช่น ดู "การใช้สมาร์ทโฟน" แยกตาม "ช่วงอายุ" ผลจะแสดงเป็นแถวคือกลุ่มที่แบ่ง คอลัมน์คือค่าของหัวข้อย่อย</div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:flex-start; break-inside:avoid;">
+      <span style="flex-shrink:0; width:26px; height:26px; border-radius:999px; background:#C43D82; color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center;">4</span>
+      <div style="font-size:14px; line-height:1.65;"><b>เลือกประเภทข้อมูล</b> — สลับการแสดงผลระหว่าง <b>ตาราง</b>, <b>กราฟแท่ง</b> หรือ <b>กราฟวงกลม</b> ได้ตามต้องการ</div>
+    </div>
+  </div>
+
+  <div style="background:#f0fbf7; border:1px solid #b8e6d2; border-radius:10px; padding:14px 18px; break-inside:avoid; margin:8px 0;">
+    <div style="font-size:13px; font-weight:700; color:#1a7a52; margin-bottom:8px;">🎯 โจทย์ตัวอย่าง</div>
+    <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 25%); margin-bottom:10px;">"อยากรู้ว่า<b>การใช้สมาร์ทโฟน</b>ของผู้สูงอายุในเขตปทุมวัน แตกต่างกันตาม<b>ช่วงอายุ</b>อย่างไร แล้วนำผลไปทำรายงานต่อ"</div>
+    <div style="font-size:12.5px; font-weight:700; color:#1a7a52; margin-bottom:6px;">เฉลย — กดตามลำดับนี้</div>
+    <ol style="font-size:13px; line-height:1.75; margin:0; padding-left:20px; color:hsl(200 25% 25%);">
+      <li>กดปุ่ม <b>"สถิติ"</b> ที่มุมบนขวา แล้วเลือก <b>ตัวเลือกเขต → "เขตปทุมวัน"</b></li>
+      <li>ขั้นที่ 1 เลือกมิติ <b>"เทคโนโลยี"</b></li>
+      <li>ขั้นที่ 2 เลือกหัวข้อย่อย <b>"การใช้สมาร์ทโฟน"</b></li>
+      <li>ขั้นที่ 3 ที่ <b>"แบ่งย่อยตาม"</b> เลือก <b>"ช่วงอายุ"</b></li>
+      <li>ขั้นที่ 4 เลือกประเภทข้อมูล <b>"กราฟแท่ง"</b> เพื่อเทียบแต่ละช่วงอายุให้อ่านง่าย</li>
+      <li>กด <b>"ส่งออก CSV"</b> (หรือ PDF) เพื่อนำตารางไปวิเคราะห์/ทำรายงานต่อ</li>
+    </ol>
+  </div>
+
+  <div style="background:#fff8fc; border-left:4px solid #C43D82; border-radius:0 8px 8px 0; padding:12px 16px; break-inside:avoid; margin:6px 0 8px;">
+    <div style="font-size:13px; font-weight:700; color:#ad1457; margin-bottom:3px;">💡 เคล็ดลับ</div>
+    <div style="font-size:13.5px; line-height:1.6;">ใช้ cross-tab ร่วมกับการเลือกหลายกลุ่ม เพื่อหาความแตกต่างเชิงพื้นที่ เช่น เปรียบเทียบระดับความเปราะบางระหว่างชุมชน แล้วกดปุ่ม "ล้างฟิลเตอร์" เพื่อเริ่มใหม่ได้ทันที</div>
+  </div>
+
+  <!-- ============ 7. FILTER SUMMARY ============ -->
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">7. ตัวกรอง &amp; ข้อความสรุปฟิลเตอร์</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 12px;">ทุกครั้งที่เลือกตัวกรอง ระบบจะแสดง <b>ข้อความสรุปฟิลเตอร์</b> ให้เห็นว่ากำลังดูข้อมูลชุดใดอยู่ ปรากฏทั้งบนหน้าจอ (เหนือกราฟ/การ์ด) และในไฟล์ที่ส่งออก</p>
+  <div style="background:hsl(320 30% 45% / .06); border:1px solid hsl(329 53% 62% / .3); border-radius:10px; padding:12px 16px; font-size:13px; color:hsl(329 40% 30%); break-inside:avoid; margin-bottom:10px;">
+    🔎 ตัวอย่าง: <b>ตัวกรองที่ใช้:</b> เขต: ปทุมวัน · กลุ่ม: จารุเมือง · ชุมชน: ตรอกสลักหิน · เพศ: หญิง, ชาย · แสดงคำตอบ"ไม่ทราบ"
+  </div>
+  <ul style="font-size:14px; line-height:1.8; margin:0 0 8px; padding-left:22px;">
+    <li>ถ้าเลือกหลายค่าในหัวข้อเดียวกัน จะคั่นด้วย <b>","</b> (เช่น หญิง, ชาย) หมายถึงเลือก "ทั้งสอง" ไม่ใช่ "อย่างใดอย่างหนึ่ง"</li>
+    <li>ปุ่ม <b>ล้างฟิลเตอร์</b> คืนค่าทุกอย่างกลับเป็นเริ่มต้น</li>
+  </ul>
+
+  <!-- ============ 8. EXPORT ============ -->
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">8. การส่งออก PDF &amp; CSV</h2>
+  <p style="font-size:14.5px; line-height:1.75; margin:0 0 14px;">ทั้งหน้าสถิติและหน้าแผนที่มีปุ่มส่งออก ทุกไฟล์จะแนบข้อความสรุปฟิลเตอร์และวันเวลาที่ออกรายงานไว้ให้อ้างอิง</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; break-inside:avoid; margin-bottom:8px;">
+    <div style="border:1px solid #f3c6dd; border-radius:10px; padding:14px 16px; background:#fff;">
+      <div style="font-size:15px; font-weight:700; color:#ad1457; margin-bottom:6px;">📄 ส่งออก PDF</div>
+      <div style="font-size:13px; line-height:1.65;">ได้รายงานสำหรับพิมพ์/แชร์ พร้อมกราฟ ตาราง หรือแผนที่ตามที่กำลังแสดง เหมาะสำหรับนำเสนอและเก็บเป็นหลักฐาน</div>
+    </div>
+    <div style="border:1px solid #f3c6dd; border-radius:10px; padding:14px 16px; background:#fff;">
+      <div style="font-size:15px; font-weight:700; color:#ad1457; margin-bottom:6px;">📊 ส่งออก CSV</div>
+      <div style="font-size:13px; line-height:1.65;">ได้ข้อมูลดิบเป็นตาราง เปิดต่อใน Excel / Google Sheets เพื่อวิเคราะห์เพิ่มเติมได้</div>
+    </div>
+  </div>
+
+  <!-- ============ 9. TIPS & FAQ ============ -->
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">9. เคล็ดลับ &amp; คำถามที่พบบ่อย</h2>
+  <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:8px;">
+    <div style="break-inside:avoid;">
+      <div style="font-size:14px; font-weight:700; color:hsl(200 25% 15%); margin-bottom:3px;">❓ เลือกกลุ่มแล้วทำไมไม่เห็นชุมชน?</div>
+      <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 30%);">ต้องเลือก "กลุ่ม" ก่อน ตัวเลือก "ชุมชน" ภายในกลุ่มนั้นจึงจะปรากฏให้เจาะย่อยได้</div>
+    </div>
+    <div style="break-inside:avoid;">
+      <div style="font-size:14px; font-weight:700; color:hsl(200 25% 15%); margin-bottom:3px;">❓ ตัวเลขในกราฟไม่ตรงกับที่คาด?</div>
+      <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 30%);">ตรวจสอบสวิตช์ "แสดงคำตอบไม่ทราบ" และข้อความสรุปฟิลเตอร์ด้านบน ว่ากำลังกรองเขต/กลุ่ม/ชุมชนใดอยู่</div>
+    </div>
+    <div style="break-inside:avoid;">
+      <div style="font-size:14px; font-weight:700; color:hsl(200 25% 15%); margin-bottom:3px;">❓ อยากเทียบหลายพื้นที่พร้อมกัน?</div>
+      <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 30%);">ในหน้าสถิติ เลือกหลายกลุ่มพร้อมกัน แต่ละกลุ่มจะแสดงเป็นชุดสีของตัวเองในกราฟ/ตารางเดียวกัน</div>
+    </div>
+    <div style="break-inside:avoid;">
+      <div style="font-size:14px; font-weight:700; color:hsl(200 25% 15%); margin-bottom:3px;">❓ ปุ่มนำเส้นทางกดแล้วขึ้น "blocked"?</div>
+      <div style="font-size:13.5px; line-height:1.65; color:hsl(200 25% 30%);">เกิดขึ้นเฉพาะตอนกดภายในหน้าแก้ไข/ตัวอย่างที่จำกัดการเชื่อมต่อ Google เมื่อเปิดหน้าเว็บจริงจะนำทางได้ปกติ</div>
+    </div>
+  </div>
+
+  <!-- ============ 10. GLOSSARY ============ -->
+  <h2 style="font-size:22px; font-weight:700; color:#ad1457; border-bottom:2px solid #f3c6dd; padding-bottom:8px; margin:30px 0 14px;">10. อภิธานศัพท์ (Glossary)</h2>
+  <table style="width:100%; border-collapse:collapse; font-size:13.5px;">
+    <thead>
+      <tr style="background:#fdf2f8;">
+        <th style="text-align:left; padding:9px 12px; color:#ad1457; border-bottom:2px solid #f3c6dd; width:32%;">คำศัพท์</th>
+        <th style="text-align:left; padding:9px 12px; color:#ad1457; border-bottom:2px solid #f3c6dd;">ความหมาย</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">มิติ <span style="color:#8a6b7c; font-weight:400;">(Dimension)</span></td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">กลุ่มด้านข้อมูลใหญ่ เช่น สุขภาพ เศรษฐกิจ สังคม เทคโนโลยี สิ่งแวดล้อม</td></tr>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">หัวข้อย่อย <span style="color:#8a6b7c; font-weight:400;">(Sub-topic)</span></td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">ตัวชี้วัด/คำถามภายในมิติหนึ่ง ๆ ที่นำมาแสดงผล</td></tr>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">กลุ่ม <span style="color:#8a6b7c; font-weight:400;">(Cluster)</span></td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">การรวมชุมชนหลายแห่งเข้าเป็นก้อนตามพื้นที่</td></tr>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">ชุมชน <span style="color:#8a6b7c; font-weight:400;">(Community)</span></td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">หน่วยพื้นที่ย่อยภายในกลุ่ม</td></tr>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">การไขว้ข้อมูล <span style="color:#8a6b7c; font-weight:400;">(Cross-tab)</span></td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">การแบ่งหัวข้อย่อยตามตัวแปรอีกตัว เพื่อดูความสัมพันธ์</td></tr>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">ADL</td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">ความสามารถในการทำกิจวัตรประจำวัน (Activities of Daily Living) บ่งชี้ภาวะพึ่งพิง</td></tr>
+      <tr style="break-inside:avoid;"><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; font-weight:600;">ระดับความเปราะบาง <span style="color:#8a6b7c; font-weight:400;">(Vulnerability)</span></td><td style="padding:8px 12px; border-bottom:1px solid #f0e0e8; line-height:1.6;">ดัชนีสรุประดับความเสี่ยง/ความเปราะบางของผู้สูงอายุ (ต่ำ · ปานกลาง · สูง · สูงมาก)</td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:30px; padding-top:16px; border-top:1px solid #f0e0e8; font-size:12px; color:#8a6b7c; text-align:center;">Chula ARi · ระบบฐานข้อมูลผู้สูงอายุ เขตปทุมวัน &amp; เขตประเวศ — คู่มือการใช้งาน</div>
+
+  </div>
+</doc-page>
+</x-dc>
+</body>
+</html>
