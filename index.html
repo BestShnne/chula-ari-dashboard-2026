@@ -778,7 +778,7 @@ class Component extends DCLogic {
     const V = this._i18n && this._i18n.VALUE_EN;
     if (V && V[c] != null) return V[c];
     const m = String(c).match(/^(.*) \((\d+) ชุมชนย่อย\)$/);
-    if (m) return m[1] + " (" + m[2] + " " + this.t("subCommunities") + ")";
+    if (m) return this.tv(m[1]) + " (" + m[2] + " " + this.t("subCommunities") + ")";
     return c;
   }
   dimEn(key, thaiFallback) {
@@ -1656,7 +1656,7 @@ class Component extends DCLogic {
         const color = CHART_COLORS[gi % CHART_COLORS.length];
         const active = selectedClusters.includes(g.cluster);
         return {
-          cluster: g.cluster, names: g.names,
+          cluster: this.tv(g.cluster), names: g.names.map((n) => this.tv(n)),
           onClick: () => toggleCluster(g.cluster),
           headerStyle: "display:flex; align-items:center; font-size:11px; font-weight:600; margin-bottom:4px; text-align:left; color:" + (active ? "#fff" : "hsl(200 25% 30%)") + ";",
           cardStyle: styleStr({
@@ -1676,11 +1676,11 @@ class Component extends DCLogic {
         .map((g) => {
           const subsActive = selectedSubs[g.cluster] || [];
           return {
-            cluster: g.cluster,
+            cluster: this.tvCluster(g.cluster),
             chips: g.names.map((nm) => {
               const active = subsActive.includes(nm);
               return {
-                name: nm,
+                name: this.tv(nm),
                 onClick: () => toggleSub(g.cluster, nm),
                 style: styleStr({
                   padding: "6px 12px", borderRadius: "999px", fontSize: "11px", fontWeight: 500, cursor: "pointer",
@@ -2129,7 +2129,7 @@ class Component extends DCLogic {
     const printRows = printSourceRows.map((r) => ({
       id: r.elderId || "-",
       houseNo: r.houseNo || "-",
-      communityLabel: r.community + " (" + r.clusterGroup + ")",
+      communityLabel: this.tv(r.community) + " (" + this.tv(r.clusterGroup) + ")",
       districtLabel: districtLabelOf(r.district),
       sex: this.tv(r.sex),
       age: r.age ?? "-",

@@ -84,6 +84,33 @@ export const Q_EN = {
 };
 
 export const VALUE_EN = {
+  // community groups (clusterGroup) — RTGS romanization
+  "กลุ่มจารุเมือง": "Charu Mueang Group",
+  "กลุ่มพระราม6": "Rama 6 Group",
+  "กลุ่มอ่อนนุช": "On Nut Group",
+  "กลุ่มเฉลิมพระเกียรติ-ศรีนครินทร์": "Chaloem Phrakiat–Srinagarindra Group",
+  // sub-communities (community) — RTGS romanization
+  "ตรอกสลักหิน": "Trok Salak Hin",
+  "วัดดวงแข": "Wat Duang Khae",
+  "จรัสเมือง": "Charat Mueang",
+  "ชาวชูชีพ": "Chao Chu Chip",
+  "ริมคลองนางหงส์": "Rim Khlong Nang Hong",
+  "วัดบรมนิวาส": "Wat Borom Niwat",
+  "วัดบรมนิวาศ": "Wat Borom Niwat",
+  "บ้านครัวใต้": "Ban Khrua Tai",
+  "คลองมอญ": "Khlong Mon",
+  "ปากคลองสองห้อง": "Pak Khlong Song Hong",
+  "ริมคลองประเวศฝั่งเหนือ": "Rim Khlong Prawet (North)",
+  "หมู่บ้านร่มเย็น": "Mu Ban Rom Yen",
+  "เฟื่องฟ้าพัฒนา": "Fueang Fa Phatthana",
+  "เปรมฤทัย ล็อค 17": "Premruethai Lock 17",
+  "เปรมฤทัยล็อค 17": "Premruethai Lock 17",
+  "คลองปักหลักพัฒนา": "Khlong Pak Lak Phatthana",
+  "สหกรณ์เคหสถานชุมชนบัวหลวงจำกัด": "Bua Luang Housing Cooperative Community",
+  // district-total column labels
+  "รวมทุกเขต": "All districts total",
+  "รวมทั้งเขตปทุมวัน": "Pathumwan total",
+  "รวมทั้งเขตประเวศ": "Prawet total",
   // generic
   "ไม่ทราบ": "Unknown",
   "รวม": "Total",
